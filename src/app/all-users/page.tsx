@@ -20,9 +20,10 @@ import {
   type Customer,
   type CustomerStatus,
 } from "@/data/mock-data";
-import { MoreVertical, ArrowUp, ArrowDown, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, ArrowUp, ArrowDown, Trash2, Eye } from "lucide-react"; // Changed Pencil to Eye
 import { cn } from "@/lib/utils";
 import { usePageTitle } from '@/contexts/PageTitleContext';
+import { UserDetailsDialog } from "@/components/user/user-details-dialog"; // Import the new dialog
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -94,7 +95,10 @@ const CustomerStatusBadge = ({ status }: { status: CustomerStatus }) => {
 export default function AllUsersPage() {
   const { setPageTitle } = usePageTitle();
   const [currentPage, setCurrentPage] = React.useState(1);
-  const usersPerPage = 8; // As per image
+  const usersPerPage = 8; 
+
+  const [selectedCustomer, setSelectedCustomer] = React.useState<Customer | null>(null);
+  const [isUserDetailsDialogOpen, setIsUserDetailsDialogOpen] = React.useState(false);
 
   React.useEffect(() => {
     setPageTitle("Customers");
@@ -142,185 +146,196 @@ export default function AllUsersPage() {
     return items;
   };
 
+  const handleViewDetails = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setIsUserDetailsDialogOpen(true);
+  };
 
   return (
-    <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
-      {/* Top Stat Cards & Customer Overview */}
-      <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left Column: Stat Cards */}
-        <div className="lg:col-span-1 space-y-6">
-          {mockUserStatCards.map((stat) => (
-            <SingleUserStatCard
-              key={stat.title}
-              title={stat.title}
-              value={stat.value}
-              percentageChange={stat.percentageChange}
-              isPositiveChange={stat.isPositiveChange}
-              periodLabel={stat.periodLabel}
-            />
-          ))}
-        </div>
+    <>
+      <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
+        {/* Top Stat Cards & Customer Overview */}
+        <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          {/* Left Column: Stat Cards */}
+          <div className="lg:col-span-1 space-y-6">
+            {mockUserStatCards.map((stat) => (
+              <SingleUserStatCard
+                key={stat.title}
+                title={stat.title}
+                value={stat.value}
+                percentageChange={stat.percentageChange}
+                isPositiveChange={stat.isPositiveChange}
+                periodLabel={stat.periodLabel}
+              />
+            ))}
+          </div>
 
-        {/* Right Column: Customer Overview Card */}
-        <div className="lg:col-span-2">
-          <Card className="shadow-lg h-full">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold">Customer Overview</CardTitle>
-                <div className="flex items-center gap-2">
-                  <Tabs defaultValue="thisWeek" className="w-auto">
-                    <TabsList className="grid h-8 grid-cols-2 p-0">
-                      <TabsTrigger value="thisWeek" className="h-full rounded-l-md rounded-r-none data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">This week</TabsTrigger>
-                      <TabsTrigger value="lastWeek" className="h-full rounded-l-none rounded-r-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Last week</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Download Report</DropdownMenuItem>
-                      <DropdownMenuItem>Settings</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                {mockCustomerOverviewStats.map((stat) => (
-                  <div key={stat.label}>
-                    <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+          {/* Right Column: Customer Overview Card */}
+          <div className="lg:col-span-2">
+            <Card className="shadow-lg h-full">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-semibold">Customer Overview</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Tabs defaultValue="thisWeek" className="w-auto">
+                      <TabsList className="grid h-8 grid-cols-2 p-0">
+                        <TabsTrigger value="thisWeek" className="h-full rounded-l-md rounded-r-none data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">This week</TabsTrigger>
+                        <TabsTrigger value="lastWeek" className="h-full rounded-l-none rounded-r-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Last week</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>Download Report</DropdownMenuItem>
+                        <DropdownMenuItem>Settings</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                ))}
-              </div>
-              <div className="h-[260px] w-full"> {/* Adjusted height slightly */}
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={customerOverviewChartData} margin={{ top: 5, right: 0, left: -25, bottom: 5 }}>
-                    <defs>
-                      <linearGradient id="colorCustomerOverview" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
-                    <XAxis dataKey="day" tickLine={false} axisLine={false} dy={10} />
-                    <YAxis tickFormatter={yAxisFormatter} tickLine={false} axisLine={false} dx={-5} />
-                    <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }} />
-                    <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} fillOpacity={1} fill="url(#colorCustomerOverview)" />
-                    {highlightedPoint && (
-                      <ReferenceDot 
-                        x={highlightedPoint.day} 
-                        y={highlightedPoint.value} 
-                        r={6} 
-                        fill="hsl(var(--primary))" 
-                        stroke="hsl(var(--background))" 
-                        strokeWidth={2} 
-                        isFront={true} 
-                      />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                  {mockCustomerOverviewStats.map((stat) => (
+                    <div key={stat.label}>
+                      <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                      <p className="text-sm text-muted-foreground">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="h-[260px] w-full"> 
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={customerOverviewChartData} margin={{ top: 5, right: 0, left: -25, bottom: 5 }}>
+                      <defs>
+                        <linearGradient id="colorCustomerOverview" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
+                      <XAxis dataKey="day" tickLine={false} axisLine={false} dy={10} />
+                      <YAxis tickFormatter={yAxisFormatter} tickLine={false} axisLine={false} dx={-5} />
+                      <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '3 3' }} />
+                      <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} fillOpacity={1} fill="url(#colorCustomerOverview)" />
+                      {highlightedPoint && (
+                        <ReferenceDot 
+                          x={highlightedPoint.day} 
+                          y={highlightedPoint.value} 
+                          r={6} 
+                          fill="hsl(var(--primary))" 
+                          stroke="hsl(var(--background))" 
+                          strokeWidth={2} 
+                          isFront={true} 
+                        />
+                      )}
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Users Table Section */}
+        <section className="space-y-4">
+          <Card className="shadow-lg">
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User Id</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Phone</TableHead>
+                      <TableHead>Total Purchase</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedCustomers.map((customer) => (
+                      <TableRow key={customer.id}>
+                        <TableCell className="font-medium">{customer.userId}</TableCell>
+                        <TableCell>{customer.name}</TableCell>
+                        <TableCell>{customer.phone}</TableCell>
+                        <TableCell>₹{customer.totalPurchase}</TableCell>
+                        <TableCell>
+                          <CustomerStatusBadge status={customer.status} />
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleViewDetails(customer)}>
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">View User Details</span>
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete User</span>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {paginatedCustomers.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={6} className="h-24 text-center">
+                          No customers found.
+                        </TableCell>
+                      </TableRow>
                     )}
-                  </AreaChart>
-                </ResponsiveContainer>
+                  </TableBody>
+                </Table>
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-end gap-4 border-t p-4">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious
+                          href="#"
+                          onClick={(e) => { e.preventDefault(); setCurrentPage(prev => Math.max(1, prev - 1)); }}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
+                          aria-disabled={currentPage === 1}
+                        />
+                      </PaginationItem>
+                      {getPaginationItems().map((item, index) =>
+                        typeof item === 'number' ? (
+                          <PaginationItem key={index}>
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => { e.preventDefault(); setCurrentPage(item); }}
+                              isActive={currentPage === item}
+                            >
+                              {item}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ) : (
+                          <PaginationEllipsis key={item + index} />
+                        )
+                      )}
+                      <PaginationItem>
+                        <PaginationNext
+                          href="#"
+                          onClick={(e) => { e.preventDefault(); setCurrentPage(prev => Math.min(totalPages, prev + 1)); }}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
+                          aria-disabled={currentPage === totalPages}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
             </CardContent>
           </Card>
-        </div>
-      </section>
-
-      {/* Users Table Section */}
-      <section className="space-y-4">
-        <Card className="shadow-lg">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User Id</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Total Purchase</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedCustomers.map((customer) => (
-                    <TableRow key={customer.id}>
-                      <TableCell className="font-medium">{customer.userId}</TableCell>
-                      <TableCell>{customer.name}</TableCell>
-                      <TableCell>{customer.phone}</TableCell>
-                      <TableCell>{customer.totalPurchase}</TableCell>
-                      <TableCell>
-                        <CustomerStatusBadge status={customer.status} />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Pencil className="h-4 w-4" />
-                          <span className="sr-only">Edit User</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                          <Trash2 className="h-4 w-4" />
-                           <span className="sr-only">Delete User</span>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  {paginatedCustomers.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={6} className="h-24 text-center">
-                        No customers found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-
-            {totalPages > 1 && (
-              <div className="flex items-center justify-end gap-4 border-t p-4">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={(e) => { e.preventDefault(); setCurrentPage(prev => Math.max(1, prev - 1)); }}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
-                        aria-disabled={currentPage === 1}
-                      />
-                    </PaginationItem>
-                    {getPaginationItems().map((item, index) =>
-                      typeof item === 'number' ? (
-                        <PaginationItem key={index}>
-                          <PaginationLink
-                            href="#"
-                            onClick={(e) => { e.preventDefault(); setCurrentPage(item); }}
-                            isActive={currentPage === item}
-                          >
-                            {item}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ) : (
-                        <PaginationEllipsis key={item + index} />
-                      )
-                    )}
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={(e) => { e.preventDefault(); setCurrentPage(prev => Math.min(totalPages, prev + 1)); }}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
-                        aria-disabled={currentPage === totalPages}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </section>
-    </div>
+        </section>
+      </div>
+      <UserDetailsDialog
+        customer={selectedCustomer}
+        isOpen={isUserDetailsDialogOpen}
+        onOpenChange={setIsUserDetailsDialogOpen}
+      />
+    </>
   );
 }

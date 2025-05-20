@@ -245,13 +245,25 @@ export type CustomerOverviewChartPoint = WeeklyChartDataPoint; // Can reuse
 
 export type CustomerStatus = "Active" | "Inactive" | "VIP";
 
+export type OrderOverviewStats = {
+  totalPurchaseCount: number;
+  completedCount: number;
+  incompleteCount: number;
+};
+
 export type Customer = {
   id: string;
   userId: string;
   name: string;
+  email: string;
   phone: string;
-  totalPurchase: string;
+  address: string;
+  avatarUrl?: string;
+  totalPurchase: string; // This is total monetary value
   status: CustomerStatus;
+  registrationDate: string;
+  lastPurchaseDate: string;
+  orderOverview: OrderOverviewStats;
 };
 
 export const mockUserStatCards: UserStatCardData[] = [
@@ -277,30 +289,33 @@ export const mockCustomerOverviewChartData: CustomerOverviewChartPoint[] = [
   { day: "Sat", value: 48000 },
 ];
 
-export const mockCustomers: Customer[] = [
-  { id: "cust1", userId: "#1234567890", name: "John Doe", phone: "+1234567890", totalPurchase: "345.00", status: "Active" },
-  { id: "cust2", userId: "#1232674566", name: "John Doe", phone: "+1234567890", totalPurchase: "340.00", status: "Active" },
-  { id: "cust3", userId: "#8473958459", name: "Jane Smith", phone: "+1234567890", totalPurchase: "250.00", status: "Inactive" },
-  { id: "cust4", userId: "#1278675389", name: "Emily Davis", phone: "+1234567890", totalPurchase: "460.00", status: "VIP" },
-  { id: "cust5", userId: "#9883768719", name: "Jane Smith", phone: "+1234567890", totalPurchase: "250.00", status: "Inactive" },
-  { id: "cust6", userId: "#7896872099", name: "John Doe", phone: "+1234567890", totalPurchase: "340.00", status: "Active" },
-  { id: "cust7", userId: "#0897987363", name: "Emily Davis", phone: "+1234567890", totalPurchase: "400.00", status: "VIP" },
-  { id: "cust8", userId: "#1768756283", name: "Jane Smith", phone: "+1234567890", totalPurchase: "250.00", status: "Inactive" },
-  { id: "cust9", userId: "#2345678901", name: "Michael Brown", phone: "+1234567891", totalPurchase: "500.00", status: "Active" },
-  { id: "cust10", userId: "#3456789012", name: "Jessica Wilson", phone: "+1234567892", totalPurchase: "150.00", status: "VIP" },
-  { id: "cust11", userId: "#4567890123", name: "David Garcia", phone: "+1234567893", totalPurchase: "200.00", status: "Inactive" },
-  { id: "cust12", userId: "#5678901234", name: "Sarah Miller", phone: "+1234567894", totalPurchase: "320.00", status: "Active" },
-  { id: "cust13", userId: "#6789012345", name: "Chris Rodriguez", phone: "+1234567895", totalPurchase: "280.00", status: "VIP" },
-  { id: "cust14", userId: "#7890123456", name: "Linda Martinez", phone: "+1234567896", totalPurchase: "180.00", status: "Inactive" },
-  { id: "cust15", userId: "#8901234567", name: "James Hernandez", phone: "+1234567897", totalPurchase: "420.00", status: "Active" },
-  { id: "cust16", userId: "#9012345678", name: "Patricia Lopez", phone: "+1234567898", totalPurchase: "210.00", status: "VIP" },
-  { id: "cust17", userId: "#0123456789", name: "Robert Gonzalez", phone: "+1234567899", totalPurchase: "300.00", status: "Inactive" },
-  { id: "cust18", userId: "#1122334455", name: "Jennifer Perez", phone: "+1234567800", totalPurchase: "380.00", status: "Active" },
-  { id: "cust19", userId: "#2233445566", name: "Daniel Sanchez", phone: "+1234567801", totalPurchase: "270.00", status: "VIP" },
-  { id: "cust20", userId: "#3344556677", name: "Elizabeth Flores", phone: "+1234567802", totalPurchase: "190.00", status: "Inactive" },
-  { id: "cust21", userId: "#4455667788", name: "William Torres", phone: "+1234567803", totalPurchase: "450.00", status: "Active" },
-  { id: "cust22", userId: "#5566778899", name: "Maria Ramirez", phone: "+1234567804", totalPurchase: "230.00", status: "VIP" },
-  { id: "cust23", userId: "#6677889900", name: "Richard Cruz", phone: "+1234567805", totalPurchase: "310.00", status: "Inactive" },
-  { id: "cust24", userId: "#7788990011", name: "Susan Stewart", phone: "+1234567806", totalPurchase: "390.00", status: "Active" },
-  { id: "cust25", userId: "#8899001122", name: "Joseph Morris", phone: "+1234567807", totalPurchase: "260.00", status: "VIP" },
-];
+const generateRandomCustomerData = (id: number): Customer => {
+  const firstNames = ["John", "Jane", "Michael", "Emily", "David", "Sarah", "Chris", "Jessica", "James", "Linda"];
+  const lastNames = ["Doe", "Smith", "Brown", "Wilson", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez"];
+  const name = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+  const emailDomain = ["example.com", "mail.com", "test.org"];
+  const email = `${name.toLowerCase().replace(" ", ".")}@${emailDomain[Math.floor(Math.random() * emailDomain.length)]}`;
+  const totalPurchaseCount = Math.floor(Math.random() * 50) + 1;
+  const completedCount = Math.floor(Math.random() * totalPurchaseCount);
+  
+  return {
+    id: `cust${id}`,
+    userId: `#${Math.floor(Math.random() * 9000000000) + 1000000000}`,
+    name,
+    email,
+    phone: `+1234567${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`,
+    address: `${Math.floor(Math.random() * 100) + 1}, Chandmari, Guwahati, 781003`,
+    avatarUrl: `https://placehold.co/64x64.png?text=${name.charAt(0)}`,
+    totalPurchase: (Math.random() * 500 + 50).toFixed(2),
+    status: ["Active", "Inactive", "VIP"][Math.floor(Math.random() * 3)] as CustomerStatus,
+    registrationDate: `15.01.202${Math.floor(Math.random() * 3) + 2}`, // 2022-2024
+    lastPurchaseDate: `10.01.202${Math.floor(Math.random() * 3) + 3}`, // 2023-2025
+    orderOverview: {
+      totalPurchaseCount,
+      completedCount,
+      incompleteCount: totalPurchaseCount - completedCount,
+    },
+  };
+};
+
+export const mockCustomers: Customer[] = Array.from({ length: 25 }, (_, i) => generateRandomCustomerData(i + 1));
