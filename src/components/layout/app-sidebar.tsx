@@ -72,14 +72,14 @@ export default function AppSidebar() {
   ];
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon"> {/* Changed here: enable icon collapsing for desktop */}
       <SidebarHeader className="p-4 flex flex-col items-start">
         <div className="flex items-center gap-2 mb-1">
           <div className="flex items-center">
             <span className="text-2xl font-bold text-primary">PRESTUDY</span>
           </div>
         </div>
-        <div className="text-xs text-muted-foreground ml-1">WAY TO SMART STUDY</div>
+        <div className="text-xs text-muted-foreground ml-1 group-data-[collapsible=icon]:hidden">WAY TO SMART STUDY</div> {/* Hide subtitle in icon mode */}
       </SidebarHeader>
 
       <SidebarContent className="p-2">
@@ -130,6 +130,7 @@ export default function AppSidebar() {
                         <p className="text-sm font-medium text-sidebar-foreground">Admin</p>
                         <p className="text-xs text-muted-foreground">prestudy@gmail.com</p>
                     </div>
+                    {/* LogOut icon removed from trigger, only in popover or if sidebar expanded */}
                     <LogOut className="ml-auto h-4 w-4 text-muted-foreground group-data-[collapsible=icon]:hidden" />
                 </Button>
             </PopoverTrigger>

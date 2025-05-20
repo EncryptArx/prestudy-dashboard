@@ -25,7 +25,6 @@ const OrderSummaryCard = ({ title, value, percentageChange, periodLabel, isPosit
       <div className="text-2xl font-bold">{value}</div>
       <p className="text-xs text-muted-foreground">
         <span className={cn("mr-1", isPositive ? "text-green-500" : "text-red-500")}>
-          {/* Ensure percentageChange includes +/- sign if needed, or adjust logic here */}
           {isPositive && !percentageChange.startsWith('+') ? '↑' : ''}
           {!isPositive && !percentageChange.startsWith('-') ? '↓' : ''} 
           {percentageChange}
@@ -104,7 +103,6 @@ export default function OrderManagementPage() {
   };
   
   React.useEffect(() => {
-    // Reset selection when tab or page changes to avoid confusion
     setSelectedOrders([]);
   }, [activeTab, currentPage]);
 
@@ -118,10 +116,10 @@ export default function OrderManagementPage() {
 
   const getPaginationItems = () => {
     const items = [];
-    if (totalPages <= 5) { // Show all pages if 5 or less
+    if (totalPages <= 5) { 
       for (let i = 1; i <= totalPages; i++) items.push(i);
     } else {
-      items.push(1); // Always show first page
+      items.push(1); 
       if (currentPage > 3) items.push('ellipsis-start');
       
       let startPage = Math.max(2, currentPage - 1);
@@ -138,7 +136,7 @@ export default function OrderManagementPage() {
       for (let i = startPage; i <= endPage; i++) items.push(i);
       
       if (currentPage < totalPages - 2) items.push('ellipsis-end');
-      items.push(totalPages); // Always show last page
+      items.push(totalPages); 
     }
     return items;
   };
@@ -147,7 +145,7 @@ export default function OrderManagementPage() {
   return (
     <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
       {/* Summary Cards */}
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4"> {/* Adjusted grid for 2 main cards */}
+      <section className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2"> {/* Adjusted grid here */}
         {orderStats.map(stat => (
           <OrderSummaryCard
             key={stat.title}
@@ -192,12 +190,12 @@ export default function OrderManagementPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between gap-2 p-4">
-              <div className="relative w-full max-w-sm">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search order report" className="pl-8" />
+            <div className="flex flex-col items-stretch gap-4 p-4 md:flex-row md:items-center md:justify-between">
+              <div className="relative w-full md:max-w-sm">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search order report" className="pl-8 w-full" />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <Button variant="outline" size="icon">
                   <ListFilter className="h-4 w-4" />
                   <span className="sr-only">Filter</span>
@@ -279,8 +277,8 @@ export default function OrderManagementPage() {
               </Table>
             </div>
 
-            {totalPages > 0 && ( // Only show pagination if there are orders
-              <div className="flex items-center justify-between border-t p-4">
+            {totalPages > 0 && ( 
+              <div className="flex flex-col items-center justify-between gap-4 border-t p-4 sm:flex-row">
                  <div className="text-sm text-muted-foreground">
                     {selectedOrders.length} of {totalFilteredOrders} row(s) selected.
                 </div>
