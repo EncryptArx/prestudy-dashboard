@@ -1,5 +1,6 @@
 
 import type { DateRange } from "react-day-picker";
+import { Ticket, CheckCircle2, Users, XCircle, BookOpen, FileText as ExamIconLucide, Brain, BarChart3, HelpCircle, ShieldCheck } from "lucide-react"; // Added more icons
 
 export type TopStatCardData = {
   title: string;
@@ -35,6 +36,8 @@ export type LeaderboardUser = {
   userName: string;
   points: number;
   avatarUrl?: string;
+  quizCompletions: number;
+  avgScore: number;
 };
 
 export type Transaction = {
@@ -43,6 +46,8 @@ export type Transaction = {
   orderDate: string;
   status: "Paid" | "Pending" | "Failed";
   amount: string; 
+  productName: string;
+  paymentMethod: PaymentMethod;
 };
 
 
@@ -101,22 +106,31 @@ export const mockUserActivityChartData: UserActivityDataPoint[] = Array.from({ l
 
 
 export const mockLeaderboardData: LeaderboardUser[] = [
-  { rank: 1, userName: "#username", points: 1432, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U1" },
-  { rank: 2, userName: "#username", points: 1342, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U2" },
-  { rank: 3, userName: "#username", points: 1135, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U3" },
-  { rank: 4, userName: "#username", points: 1003, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U4" },
-  { rank: 5, userName: "#username", points: 937, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U5" },
-  { rank: 6, userName: "#username", points: 921, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U6" },
-  { rank: 7, userName: "#username", points: 870, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U7" },
-  { rank: 8, userName: "#username", points: 821, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U8" },
+  { rank: 1, userName: "UserAlpha", points: 1432, avatarUrl: "https://placehold.co/32x32.png?text=UA", quizCompletions: 50, avgScore: 92 },
+  { rank: 2, userName: "BetaUser", points: 1342, avatarUrl: "https://placehold.co/32x32.png?text=BU", quizCompletions: 45, avgScore: 90 },
+  { rank: 3, userName: "GammaPlayer", points: 1135, avatarUrl: "https://placehold.co/32x32.png?text=GP", quizCompletions: 40, avgScore: 88 },
+  { rank: 4, userName: "DeltaChamp", points: 1003, avatarUrl: "https://placehold.co/32x32.png?text=DC", quizCompletions: 35, avgScore: 85 },
+  { rank: 5, userName: "EpsilonStar", points: 937, avatarUrl: "https://placehold.co/32x32.png?text=ES", quizCompletions: 30, avgScore: 82 },
+  { rank: 6, userName: "ZetaMaster", points: 921, avatarUrl: "https://placehold.co/32x32.png?text=ZM", quizCompletions: 28, avgScore: 80 },
+  { rank: 7, userName: "EtaGuru", points: 870, avatarUrl: "https://placehold.co/32x32.png?text=EG", quizCompletions: 25, avgScore: 78 },
+  { rank: 8, userName: "ThetaPro", points: 821, avatarUrl: "https://placehold.co/32x32.png?text=TP", quizCompletions: 22, avgScore: 75 },
+  { rank: 9, userName: "IotaExpert", points: 799, avatarUrl: "https://placehold.co/32x32.png?text=IE", quizCompletions: 20, avgScore: 73 },
+  { rank: 10, userName: "KappaAce", points: 750, avatarUrl: "https://placehold.co/32x32.png?text=KA", quizCompletions: 18, avgScore: 70 },
 ];
 
 export const mockTransactionsData: Transaction[] = [
-  { id: "1", customerId: "#6545", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
-  { id: "2", customerId: "#5412", orderDate: "01 Oct | 11:29 am", status: "Pending", amount: "₹99" },
-  { id: "3", customerId: "#6622", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
-  { id: "4", customerId: "#6462", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
-  { id: "5", customerId: "#6462", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
+  { id: "1", customerId: "#6545", orderDate: "01 Oct 2024 | 11:29 am", status: "Paid", amount: "₹199", productName: "General Knowledge Quiz Pack", paymentMethod: "UPI" },
+  { id: "2", customerId: "#5412", orderDate: "01 Oct 2024 | 10:15 am", status: "Pending", amount: "₹99", productName: "History Quiz", paymentMethod: "Credit Card"},
+  { id: "3", customerId: "#6622", orderDate: "30 Sep 2024 | 09:00 pm", status: "Paid", amount: "₹199", productName: "Science Challenge", paymentMethod: "Debit Card" },
+  { id: "4", customerId: "#6462", orderDate: "30 Sep 2024 | 05:30 pm", status: "Paid", amount: "₹199", productName: "Mathematics Advanced", paymentMethod: "UPI" },
+  { id: "5", customerId: "#7890", orderDate: "29 Sep 2024 | 02:00 pm", status: "Failed", amount: "₹49", productName: "Quick GK Test", paymentMethod: "Net Banking"},
+  { id: "6", customerId: "#1234", orderDate: "29 Sep 2024 | 11:00 am", status: "Paid", amount: "₹299", productName: "Full Aptitude Course", paymentMethod: "UPI" },
+  { id: "7", customerId: "#5678", orderDate: "28 Sep 2024 | 08:45 pm", status: "Paid", amount: "₹149", productName: "Reasoning Masterclass", paymentMethod: "Credit Card" },
+  { id: "8", customerId: "#9012", orderDate: "28 Sep 2024 | 03:15 pm", status: "Pending", amount: "₹199", productName: "Assam GK Special", paymentMethod: "Debit Card" },
+  { id: "9", customerId: "#3456", orderDate: "27 Sep 2024 | 06:00 pm", status: "Paid", amount: "₹99", productName: "SSC Exam Prep", paymentMethod: "UPI" },
+  { id: "10", customerId: "#7891", orderDate: "27 Sep 2024 | 01:00 pm", status: "Paid", amount: "₹79", productName: "TET Mock Test", paymentMethod: "Net Banking" },
+  { id: "11", customerId: "#1122", orderDate: "26 Sep 2024 | 10:30 am", status: "Failed", amount: "₹199", productName: "ADRE Full Pack", paymentMethod: "UPI" },
+  { id: "12", customerId: "#3344", orderDate: "26 Sep 2024 | 09:00 am", status: "Paid", amount: "₹59", productName: "Daily Current Affairs", paymentMethod: "Credit Card" },
 ];
 
 
@@ -382,9 +396,9 @@ export const mockProductListItems: ProductListItem[] = [
   { id: "prod11", name: "Logical Reasoning Puzzles", createdDate: "22-11-2024", category: "Reasoning" },
 ];
 
-export const totalQuizCount = mockProductListItems.length; // Or a static number like 145 from image
-export const featuredProductCount = 20; // example
-export const onSaleProductCount = 15; // example
+export const totalQuizCount = mockProductListItems.length; 
+export const featuredProductCount = 20; 
+export const onSaleProductCount = 15; 
 
 
 // Types for Coupon Code Page
@@ -423,7 +437,6 @@ export const mockCouponStats: CouponStatSummary[] = [
   { title: "Expired Coupons", value: "12", icon: XCircle, iconColor: "text-red-500" },
 ];
 
-import { Ticket, CheckCircle2, Users, XCircle } from "lucide-react"; // Import icons for CouponStatSummary
 
 export const mockCoupons: Coupon[] = [
   {
@@ -495,3 +508,110 @@ export const mockCoupons: Coupon[] = [
     status: "expired",
   },
 ];
+
+// Quiz Management Types
+export type QuizDifficulty = "Easy" | "Medium" | "Hard";
+export type QuizStatus = "Draft" | "Published" | "Archived";
+
+export type QuizListItem = {
+  id: string;
+  title: string;
+  category: string; // Category ID from mockDiscoverCategories
+  questionsCount: number;
+  difficulty: QuizDifficulty;
+  status: QuizStatus;
+  createdDate: string;
+  lastUpdatedDate: string;
+};
+
+export const mockQuizListItems: QuizListItem[] = [
+  {
+    id: "quiz1",
+    title: "Basics of Indian History",
+    category: "genknow",
+    questionsCount: 20,
+    difficulty: "Easy",
+    status: "Published",
+    createdDate: "2024-05-01",
+    lastUpdatedDate: "2024-05-10",
+  },
+  {
+    id: "quiz2",
+    title: "Advanced Algebra Challenge",
+    category: "quant",
+    questionsCount: 15,
+    difficulty: "Hard",
+    status: "Published",
+    createdDate: "2024-04-15",
+    lastUpdatedDate: "2024-05-05",
+  },
+  {
+    id: "quiz3",
+    title: "Assam Geography Overview",
+    category: "assgk",
+    questionsCount: 25,
+    difficulty: "Medium",
+    status: "Draft",
+    createdDate: "2024-06-01",
+    lastUpdatedDate: "2024-06-01",
+  },
+  {
+    id: "quiz4",
+    title: "Logical Puzzles Set 1",
+    category: "reason",
+    questionsCount: 10,
+    difficulty: "Easy",
+    status: "Published",
+    createdDate: "2024-03-10",
+    lastUpdatedDate: "2024-03-15",
+  },
+  {
+    id: "quiz5",
+    title: "ADRE Exam Mock Test",
+    category: "adre",
+    questionsCount: 50,
+    difficulty: "Medium",
+    status: "Archived",
+    createdDate: "2023-12-01",
+    lastUpdatedDate: "2024-01-10",
+  },
+  {
+    id: "quiz6",
+    title: "SSC CGL Tier 1 Practice",
+    category: "ssc",
+    questionsCount: 30,
+    difficulty: "Medium",
+    status: "Published",
+    createdDate: "2024-02-20",
+    lastUpdatedDate: "2024-03-01",
+  },
+];
+
+export const quizCategories = mockDiscoverCategories.map(cat => ({ value: cat.id, label: cat.title }));
+export const quizDifficulties: {value: QuizDifficulty, label: string}[] = [
+    {value: "Easy", label: "Easy"},
+    {value: "Medium", label: "Medium"},
+    {value: "Hard", label: "Hard"}
+];
+
+export type QuizQuestion = {
+    id: string;
+    type: 'multiple-choice' | 'true-false' | 'short-answer';
+    text: string;
+    options?: string[]; // For multiple-choice
+    correctAnswer: string | boolean; // string for MC/SA, boolean for T/F
+    explanation?: string;
+};
+
+// Simple structure for the add quiz form for now
+export type AddQuizFormValues = {
+    title: string;
+    category: string;
+    difficulty: QuizDifficulty;
+    description: string;
+    // For simplicity, we'll use a JSON string for questions in the mock setup
+    // In a real app, this would be a more structured array of question objects
+    questionsJson: string; 
+};
+
+    

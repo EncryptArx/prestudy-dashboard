@@ -49,24 +49,24 @@ export default function AppSidebar() {
         { href: "/all-users", label: "All Users", icon: Users, activePaths: ["/all-users"] },
         { href: "/coupon-code", label: "Coupon Code", icon: Ticket, activePaths: ["/coupon-code"] },
         { href: "/categories", label: "Categories", icon: LayoutGrid, activePaths: ["/categories"] },
-        { href: "#", label: "Transaction", icon: ListOrdered },
-        { href: "#", label: "Leaderboard", icon: Star }, 
+        { href: "/transactions", label: "Transaction", icon: ListOrdered, activePaths: ["/transactions"] },
+        { href: "/leaderboard", label: "Leaderboard", icon: Star, activePaths: ["/leaderboard"] }, 
       ],
     },
     {
       group: "App Management",
       items: [
-        { href: "#", label: "Add Quiz", icon: PlusCircle },
-        { href: "#", label: "Quiz List", icon: ListChecks },
-        { href: "#", label: "Course Categories", icon: Network },
-        { href: "#", label: "Product Reviews", icon: FileText },
+        { href: "/add-quiz", label: "Add Quiz", icon: PlusCircle, activePaths: ["/add-quiz"] },
+        { href: "/quiz-list", label: "Quiz List", icon: ListChecks, activePaths: ["/quiz-list"] },
+        { href: "/course-categories", label: "Course Categories", icon: Network, activePaths: ["/course-categories"] },
+        { href: "/product-reviews", label: "Product Reviews", icon: FileText, activePaths: ["/product-reviews"] },
       ],
     },
     {
       group: "Admin",
       items: [
-        { href: "#", label: "Admin role", icon: UserCog },
-        { href: "#", label: "Control Authority", icon: Settings2 },
+        { href: "/admin-role", label: "Admin role", icon: UserCog, activePaths: ["/admin-role"] },
+        { href: "/control-authority", label: "Control Authority", icon: Settings2, activePaths: ["/control-authority"] },
       ],
     },
   ];
@@ -144,3 +144,6 @@ export default function AppSidebar() {
     </Sidebar>
   );
 }
+
+
+    
