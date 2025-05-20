@@ -87,7 +87,7 @@ export const mockWeeklyReportData: WeeklyChartDataPoint[] = [
   { day: "Sun", value: 15000 },
   { day: "Mon", value: 18000 },
   { day: "Tue", value: 25000 },
-  { day: "Wed", value: 28000, highlighted: true, highlightLabel: "Thursday 14k" }, 
+  { day: "Wed", value: 28000, highlighted: true, highlightLabel: "Thursday 25,409" }, 
   { day: "Thu", value: 22000 },
   { day: "Fri", value: 30000 },
   { day: "Sat", value: 33000 },
@@ -160,7 +160,7 @@ export const initialFilters = {
 };
 
 
-// New types for Order Management
+// Types for Order Management
 export type OrderStatus = "Complete" | "Pending" | "Canceled";
 export type PaymentMethod = "UPI" | "Debit Card" | "Credit Card" | "Net Banking";
 
@@ -225,4 +225,82 @@ export const mockOrders: Order[] = [
   { id: "ord22", orderId: "#ORD2333", userId: "#3344556677", productName: "Financial Planning 101", date: "07-01-2025", price: "₹75.00", paymentMethod: "Debit Card", status: "Canceled" },
   { id: "ord23", orderId: "#ORD2334", userId: "#4455667788", productName: "Public Speaking Essentials", date: "08-01-2025", price: "₹99.00", paymentMethod: "Net Banking", status: "Complete" },
   { id: "ord24", orderId: "#ORD2335", userId: "#5566778899", productName: "Graphic Design Basics", date: "08-01-2025", price: "₹120.00", paymentMethod: "UPI", status: "Pending" },
+];
+
+// Types for All Users page
+export type UserStatCardData = {
+  title: string;
+  value: string;
+  percentageChange: number;
+  isPositiveChange: boolean;
+  periodLabel: string;
+};
+
+export type CustomerOverviewStat = {
+  label: string;
+  value: string;
+};
+
+export type CustomerOverviewChartPoint = WeeklyChartDataPoint; // Can reuse
+
+export type CustomerStatus = "Active" | "Inactive" | "VIP";
+
+export type Customer = {
+  id: string;
+  userId: string;
+  name: string;
+  phone: string;
+  totalPurchase: string;
+  status: CustomerStatus;
+};
+
+export const mockUserStatCards: UserStatCardData[] = [
+  { title: "Total Customers", value: "11,040", percentageChange: 14.4, isPositiveChange: true, periodLabel: "Last 7 days" },
+  { title: "New Customers", value: "2,370", percentageChange: 20, isPositiveChange: true, periodLabel: "Last 7 days" },
+  { title: "Visitor", value: "250k", percentageChange: 20, isPositiveChange: true, periodLabel: "Last 7 days" },
+];
+
+export const mockCustomerOverviewStats: CustomerOverviewStat[] = [
+  { label: "Active Customers", value: "25k" },
+  { label: "Repeat Customers", value: "5.6k" },
+  { label: "Shop Visitor", value: "250k" },
+  { label: "Conversion Rate", value: "5.5%" },
+];
+
+export const mockCustomerOverviewChartData: CustomerOverviewChartPoint[] = [
+  { day: "Sun", value: 20000 },
+  { day: "Mon", value: 22000 },
+  { day: "Tue", value: 30000 },
+  { day: "Wed", value: 38000, highlighted: true, highlightLabel: "Thursday 25,409" },
+  { day: "Thu", value: 35000 },
+  { day: "Fri", value: 45000 },
+  { day: "Sat", value: 48000 },
+];
+
+export const mockCustomers: Customer[] = [
+  { id: "cust1", userId: "#1234567890", name: "John Doe", phone: "+1234567890", totalPurchase: "345.00", status: "Active" },
+  { id: "cust2", userId: "#1232674566", name: "John Doe", phone: "+1234567890", totalPurchase: "340.00", status: "Active" },
+  { id: "cust3", userId: "#8473958459", name: "Jane Smith", phone: "+1234567890", totalPurchase: "250.00", status: "Inactive" },
+  { id: "cust4", userId: "#1278675389", name: "Emily Davis", phone: "+1234567890", totalPurchase: "460.00", status: "VIP" },
+  { id: "cust5", userId: "#9883768719", name: "Jane Smith", phone: "+1234567890", totalPurchase: "250.00", status: "Inactive" },
+  { id: "cust6", userId: "#7896872099", name: "John Doe", phone: "+1234567890", totalPurchase: "340.00", status: "Active" },
+  { id: "cust7", userId: "#0897987363", name: "Emily Davis", phone: "+1234567890", totalPurchase: "400.00", status: "VIP" },
+  { id: "cust8", userId: "#1768756283", name: "Jane Smith", phone: "+1234567890", totalPurchase: "250.00", status: "Inactive" },
+  { id: "cust9", userId: "#2345678901", name: "Michael Brown", phone: "+1234567891", totalPurchase: "500.00", status: "Active" },
+  { id: "cust10", userId: "#3456789012", name: "Jessica Wilson", phone: "+1234567892", totalPurchase: "150.00", status: "VIP" },
+  { id: "cust11", userId: "#4567890123", name: "David Garcia", phone: "+1234567893", totalPurchase: "200.00", status: "Inactive" },
+  { id: "cust12", userId: "#5678901234", name: "Sarah Miller", phone: "+1234567894", totalPurchase: "320.00", status: "Active" },
+  { id: "cust13", userId: "#6789012345", name: "Chris Rodriguez", phone: "+1234567895", totalPurchase: "280.00", status: "VIP" },
+  { id: "cust14", userId: "#7890123456", name: "Linda Martinez", phone: "+1234567896", totalPurchase: "180.00", status: "Inactive" },
+  { id: "cust15", userId: "#8901234567", name: "James Hernandez", phone: "+1234567897", totalPurchase: "420.00", status: "Active" },
+  { id: "cust16", userId: "#9012345678", name: "Patricia Lopez", phone: "+1234567898", totalPurchase: "210.00", status: "VIP" },
+  { id: "cust17", userId: "#0123456789", name: "Robert Gonzalez", phone: "+1234567899", totalPurchase: "300.00", status: "Inactive" },
+  { id: "cust18", userId: "#1122334455", name: "Jennifer Perez", phone: "+1234567800", totalPurchase: "380.00", status: "Active" },
+  { id: "cust19", userId: "#2233445566", name: "Daniel Sanchez", phone: "+1234567801", totalPurchase: "270.00", status: "VIP" },
+  { id: "cust20", userId: "#3344556677", name: "Elizabeth Flores", phone: "+1234567802", totalPurchase: "190.00", status: "Inactive" },
+  { id: "cust21", userId: "#4455667788", name: "William Torres", phone: "+1234567803", totalPurchase: "450.00", status: "Active" },
+  { id: "cust22", userId: "#5566778899", name: "Maria Ramirez", phone: "+1234567804", totalPurchase: "230.00", status: "VIP" },
+  { id: "cust23", userId: "#6677889900", name: "Richard Cruz", phone: "+1234567805", totalPurchase: "310.00", status: "Inactive" },
+  { id: "cust24", userId: "#7788990011", name: "Susan Stewart", phone: "+1234567806", totalPurchase: "390.00", status: "Active" },
+  { id: "cust25", userId: "#8899001122", name: "Joseph Morris", phone: "+1234567807", totalPurchase: "260.00", status: "VIP" },
 ];
