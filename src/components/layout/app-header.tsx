@@ -1,3 +1,4 @@
+
 "use client";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -7,14 +8,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sun, Moon, Bell, Search as SearchIcon, Settings, User, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePageTitle } from '@/contexts/PageTitleContext'; // Add this
 
 export default function AppHeader() {
   const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState("light");
+  const { pageTitle } = usePageTitle(); // Consume context
 
   useEffect(() => {
     setMounted(true);
-    const storedTheme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const storedTheme = typeof window !== 'undefined' ? localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : "light";
     setTheme(storedTheme);
     if (storedTheme === "dark") {
       document.documentElement.classList.add("dark");
@@ -26,7 +29,9 @@ export default function AppHeader() {
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("theme", newTheme);
+    }
     if (newTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
@@ -38,9 +43,10 @@ export default function AppHeader() {
     return (
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur md:px-6">
         <div className="h-8 w-8 md:hidden" /> {/* Placeholder for SidebarTrigger */}
-        <div className="flex-1">
-          <div className="relative">
-            <div className="h-10 w-full max-w-md rounded-md bg-muted" /> {/* Placeholder for Search */}
+         <div className="hidden md:block h-6 w-32 rounded bg-muted" /> {/* Placeholder for Page Title */}
+        <div className="flex-1 flex justify-center md:justify-start">
+          <div className="relative w-full max-w-md">
+            <div className="h-10 w-full rounded-md bg-muted" /> {/* Placeholder for Search */}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -57,8 +63,7 @@ export default function AppHeader() {
       <SidebarTrigger className="md:hidden" />
       
       <div className="hidden md:block text-2xl font-semibold text-foreground">
-        Dashboard 
-        {/* This title is shown in the image. If it should be dynamic, it needs context. */}
+        {pageTitle}
       </div>
 
       <div className="flex-1 flex justify-center md:justify-start">

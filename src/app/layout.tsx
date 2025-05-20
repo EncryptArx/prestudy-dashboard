@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -6,7 +7,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import AppSidebar from '@/components/layout/app-sidebar';
 import AppHeader from '@/components/layout/app-header';
 import { SidebarInset } from '@/components/ui/sidebar';
-import { PrestudyFavicon } from '@/components/icons'; // Assuming you have this for favicon
+import { PageTitleProvider } from '@/contexts/PageTitleContext'; // Add this
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,13 +37,15 @@ export default function RootLayout({
         {/* <link rel="icon" href="/favicon.ico" sizes="any" /> */}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <AppHeader />
-            {children}
-          </SidebarInset>
-        </SidebarProvider>
+        <PageTitleProvider> {/* Wrap here */}
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <AppHeader />
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
+        </PageTitleProvider> {/* End wrap */}
         <Toaster />
       </body>
     </html>

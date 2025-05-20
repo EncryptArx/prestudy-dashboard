@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -7,8 +8,15 @@ import { ReportCard } from "@/components/dashboard/report-card";
 import { UserActivityCard } from "@/components/dashboard/user-activity-card";
 import { LeaderboardCard } from "@/components/dashboard/leaderboard-card";
 import { TransactionsCard } from "@/components/dashboard/transactions-card";
+import { usePageTitle } from '@/contexts/PageTitleContext';
 
 export default function DashboardPage() {
+  const { setPageTitle } = usePageTitle();
+
+  React.useEffect(() => {
+    setPageTitle("Dashboard");
+  }, [setPageTitle]);
+
   return (
     <main className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
       {/* Top Summary Cards */}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -23,14 +24,13 @@ import {
   Star,
   PlusCircle,
   ListChecks,
-  Network, // Using Network for Course Categories
-  FileText, // Using FileText for Product Reviews
+  Network, 
+  FileText, 
   UserCog,
-  Settings2, // Using Settings2 for Control Authority
+  Settings2, 
   LogOut,
   ExternalLink,
-  ChevronDown,
-  Briefcase, // Placeholder for "Your App"
+  Briefcase, 
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -45,12 +45,12 @@ export default function AppSidebar() {
       group: "Main menu",
       items: [
         { href: "/", label: "Dashboard", icon: LayoutDashboard, activePaths: ["/"] },
-        { href: "#", label: "Order Management", icon: ShoppingCart },
+        { href: "/order-management", label: "Order Management", icon: ShoppingCart, activePaths: ["/order-management"] },
         { href: "#", label: "All Users", icon: Users },
         { href: "#", label: "Coupon Code", icon: Ticket },
         { href: "#", label: "Categories", icon: LayoutGrid },
         { href: "#", label: "Transaction", icon: ListOrdered },
-        { href: "#", label: "Leaderboard", icon: Star }, // Using Star, BarChart3 might be better for stats
+        { href: "#", label: "Leaderboard", icon: Star }, 
       ],
     },
     {
@@ -75,7 +75,6 @@ export default function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="p-4 flex flex-col items-start">
         <div className="flex items-center gap-2 mb-1">
-          {/* Simplified text logo based on image */}
           <div className="flex items-center">
             <span className="text-2xl font-bold text-primary">PRESTUDY</span>
           </div>
