@@ -9,8 +9,15 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { RevenueData } from "@/data/mock-data";
+// import type { RevenueData } from "@/data/mock-data"; // Assuming RevenueData might change
 import { format } from "date-fns";
+
+// Placeholder type if RevenueData changes
+type RevenueData = {
+  date: string;
+  revenue: number;
+  profit?: number;
+};
 
 
 type RevenueLineChartProps = {

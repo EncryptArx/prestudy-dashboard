@@ -9,7 +9,15 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { SalesData } from "@/data/mock-data";
+// import type { SalesData } from "@/data/mock-data"; // Assuming SalesData might change
+
+// Placeholder type if SalesData changes
+type SalesData = {
+  month: string;
+  sales: number;
+  target: number;
+};
+
 
 type SalesBarChartProps = {
   data: SalesData[];

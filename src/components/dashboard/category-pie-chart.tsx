@@ -9,7 +9,14 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import type { CategoryData } from "@/data/mock-data";
+// import type { CategoryData } from "@/data/mock-data"; // Assuming CategoryData might be reused or adapted
+
+// Placeholder type if CategoryData is removed or significantly changed
+type CategoryData = {
+  name: string;
+  value: number;
+  fill?: string;
+};
 
 type CategoryPieChartProps = {
   data: CategoryData[];

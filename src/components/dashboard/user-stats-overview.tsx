@@ -1,6 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { UserStats } from "@/data/mock-data";
+// import type { UserStats } from "@/data/mock-data"; // Assuming UserStats might change
 import { Users2, TrendingUp, UserPlus, Percent } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// Placeholder type if UserStats changes
+type UserStats = {
+  totalUsers: number;
+  activeUsers: number;
+  newSignups: number;
+  retentionRate: number;
+};
+
 
 type UserStatsOverviewProps = {
   stats: UserStats;
@@ -12,28 +22,27 @@ export function UserStatsOverview({ stats }: UserStatsOverviewProps) {
       title: "Total Users",
       value: stats.totalUsers.toLocaleString(),
       icon: Users2,
-      bgColor: "bg-blue-100 dark:bg-blue-900",
-      textColor: "text-blue-600 dark:text-blue-300",
+      // Using Tailwind's text color utilities with theme variables is preferred if possible,
+      // but direct classes are used here for simplicity matching the original.
+      // For theme-based colors, you'd rely on --foreground, --primary, etc.
+      textColor: "text-blue-600 dark:text-blue-400", // Example: adapt to theme
     },
     {
       title: "Active Users",
       value: stats.activeUsers.toLocaleString(),
       icon: TrendingUp,
-      bgColor: "bg-green-100 dark:bg-green-900",
-      textColor: "text-green-600 dark:text-green-300",
+      textColor: "text-green-600 dark:text-green-400",
     },
     {
       title: "New Signups (Month)",
       value: stats.newSignups.toLocaleString(),
       icon: UserPlus,
-      bgColor: "bg-purple-100 dark:bg-purple-900",
-      textColor: "text-purple-600 dark:text-purple-300",
+      textColor: "text-purple-600 dark:text-purple-400",
     },
     {
       title: "Retention Rate",
       value: `${stats.retentionRate.toFixed(1)}%`,
       icon: Percent,
-      bgColor: "bg-yellow-100 dark:bg-yellow-900",
       textColor: "text-yellow-600 dark:text-yellow-400",
     },
   ];
@@ -46,10 +55,12 @@ export function UserStatsOverview({ stats }: UserStatsOverviewProps) {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {item.title}
             </CardTitle>
-            <item.icon className={`h-5 w-5 ${item.textColor}`} />
+            {/* For icons, rely on text-foreground or specific theme colors if not item.textColor */}
+            <item.icon className={cn("h-5 w-5", item.textColor || 'text-muted-foreground')} />
           </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${item.textColor}`}>{item.value}</div>
+             {/* For value, rely on text-foreground or specific theme colors */}
+            <div className={cn("text-3xl font-bold", item.textColor || 'text-foreground')}>{item.value}</div>
           </CardContent>
         </Card>
       ))}

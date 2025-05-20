@@ -1,3 +1,126 @@
+import type { DateRange } from "react-day-picker";
+
+export type TopStatCardData = {
+  title: string;
+  amount: string; // e.g., "₹30K", "1.7K"
+  percentageChange: number; // e.g., 10.4
+  isPositiveChange: boolean;
+  previousPeriodValue: string; // e.g., "(₹43K)", "(0.6K)"
+  trendLabel?: string; // e.g., "Sales", "order"
+  additionalPurchaseInfo?: string; // e.g., "user 204" (for Purchase column)
+  additionalCompleteInfo?: string; // e.g. "94" (for Complete column with its own change)
+  completePercentageChange?: number;
+  isCompletePositiveChange?: boolean;
+};
+
+export type ReportStat = {
+  label: string;
+  value: string; // e.g., "2k", "₹35k"
+};
+
+export type WeeklyChartDataPoint = {
+  day: string; // "Sun", "Mon", ...
+  value: number;
+  highlighted?: boolean;
+  highlightLabel?: string;
+};
+
+export type UserActivityDataPoint = {
+  value: number;
+};
+
+export type LeaderboardUser = {
+  rank: number;
+  userName: string;
+  points: number;
+  avatarUrl?: string;
+};
+
+export type Transaction = {
+  id: string;
+  customerId: string;
+  orderDate: string;
+  status: "Paid" | "Pending" | "Failed";
+  amount: string; // e.g., "₹199"
+};
+
+
+export const mockTopStatCards: TopStatCardData[] = [
+  {
+    title: "Total Purchase Amount",
+    amount: "₹30K",
+    percentageChange: 10.4,
+    isPositiveChange: true,
+    previousPeriodValue: "Previous 7days (₹43K)",
+    trendLabel: "Sales",
+  },
+  {
+    title: "Total Purchase Quizzes",
+    amount: "1.7K",
+    percentageChange: 14.4,
+    isPositiveChange: true,
+    previousPeriodValue: "Previous 7days (0.6K)",
+    trendLabel: "order",
+  },
+  {
+    title: "Purchase & Complete Quizzes",
+    amount: "1.7K", // This is "Purchase"
+    additionalPurchaseInfo: "user 204",
+    percentageChange: 0, // No explicit change % for "Purchase" part in image
+    isPositiveChange: true, // Assuming neutral or not shown explicitly
+    // "Complete" part
+    additionalCompleteInfo: "94",
+    completePercentageChange: -14.4, // Negative as per arrow
+    isCompletePositiveChange: false,
+    previousPeriodValue: "Last 7 days", // General descriptor
+  },
+];
+
+export const mockReportStats: ReportStat[] = [
+  { label: "Online User", value: "2k" },
+  { label: "Total Quiz purchase", value: "3.5k" },
+  { label: "Total Users", value: "22k" },
+  { label: "Revenue", value: "₹35k" },
+];
+
+export const mockWeeklyReportData: WeeklyChartDataPoint[] = [
+  { day: "Sun", value: 15000 },
+  { day: "Mon", value: 18000 },
+  { day: "Tue", value: 25000 },
+  { day: "Wed", value: 28000, highlighted: true, highlightLabel: "Thursday 14k" }, // Image says Thursday, but data point is Wed
+  { day: "Thu", value: 22000 },
+  { day: "Fri", value: 30000 },
+  { day: "Sat", value: 33000 },
+];
+
+
+export const mockUserActivityValue = 221; // Users per minute
+export const mockUserActivityChartData: UserActivityDataPoint[] = Array.from({ length: 20 }, () => ({
+  value: Math.floor(Math.random() * 100),
+}));
+
+
+export const mockLeaderboardData: LeaderboardUser[] = [
+  { rank: 1, userName: "#username", points: 1432, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U1" },
+  { rank: 2, userName: "#username", points: 1342, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U2" },
+  { rank: 3, userName: "#username", points: 1135, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U3" },
+  { rank: 4, userName: "#username", points: 1003, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U4" },
+  { rank: 5, userName: "#username", points: 937, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U5" },
+  { rank: 6, userName: "#username", points: 921, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U6" },
+  { rank: 7, userName: "#username", points: 870, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U7" },
+  { rank: 8, userName: "#username", points: 821, avatarUrl: "https://placehold.co/32x32/E0E0E0/757575?text=U8" },
+];
+
+export const mockTransactionsData: Transaction[] = [
+  { id: "1", customerId: "#6545", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
+  { id: "2", customerId: "#5412", orderDate: "01 Oct | 11:29 am", status: "Pending", amount: "₹99" },
+  { id: "3", customerId: "#6622", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
+  { id: "4", customerId: "#6462", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
+  { id: "5", customerId: "#6462", orderDate: "01 Oct | 11:29 am", status: "Paid", amount: "₹199" },
+];
+
+
+// Keep existing filter types if needed, or remove if not used by new dashboard
 export type SalesData = {
   month: string;
   sales: number;
@@ -23,45 +146,10 @@ export type UserStats = {
   retentionRate: number;
 };
 
-export const mockSalesData: SalesData[] = [
-  { month: "Jan", sales: 4000, target: 3000 },
-  { month: "Feb", sales: 3000, target: 3200 },
-  { month: "Mar", sales: 5000, target: 4000 },
-  { month: "Apr", sales: 2780, target: 3500 },
-  { month: "May", sales: 1890, target: 2500 },
-  { month: "Jun", sales: 2390, target: 3000 },
-  { month: "Jul", sales: 3490, target: 3800 },
-  { month: "Aug", sales: 3200, target: 3500 },
-  { month: "Sep", sales: 4100, target: 4000 },
-  { month: "Oct", sales: 3800, target: 3900 },
-  { month: "Nov", sales: 4500, target: 4200 },
-  { month: "Dec", sales: 4800, target: 5000 },
-];
-
-export const mockRevenueData: RevenueData[] = [
-  { date: "2023-01-01", revenue: 2400, profit: 1200 },
-  { date: "2023-02-01", revenue: 1398, profit: 600 },
-  { date: "2023-03-01", revenue: 9800, profit: 4500 },
-  { date: "2023-04-01", revenue: 3908, profit: 1800 },
-  { date: "2023-05-01", revenue: 4800, profit: 2200 },
-  { date: "2023-06-01", revenue: 3800, profit: 1700 },
-  { date: "2023-07-01", revenue: 4300, profit: 2000 },
-];
-
-export const mockCategoryData: CategoryData[] = [
-  { name: "Electronics", value: 400, fill: "var(--color-chart-1)" },
-  { name: "Clothing", value: 300, fill: "var(--color-chart-2)" },
-  { name: "Groceries", value: 300, fill: "var(--color-chart-3)" },
-  { name: "Books", value: 200, fill: "var(--color-chart-4)" },
-  { name: "Home Goods", value: 278, fill: "var(--color-chart-5)" },
-];
-
-export const mockUserStats: UserStats = {
-  totalUsers: 12543,
-  activeUsers: 8765,
-  newSignups: 320,
-  retentionRate: 75.8,
-};
+export const mockSalesData: SalesData[] = [];
+export const mockRevenueData: RevenueData[] = [];
+export const mockCategoryData: CategoryData[] = [];
+export const mockUserStats: UserStats = { totalUsers: 0, activeUsers: 0, newSignups: 0, retentionRate: 0 };
 
 export const initialFilters = {
   dateRange: {

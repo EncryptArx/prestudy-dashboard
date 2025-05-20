@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils"; // Corrected import
 
 type ChartCardProps = {
   title: string;
@@ -39,10 +40,4 @@ export function ChartCard({
       <CardContent>{children}</CardContent>
     </Card>
   );
-}
-
-// Helper for cn if not globally available, or import from "@/lib/utils"
-// This is usually in @/lib/utils.ts
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }

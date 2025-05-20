@@ -10,7 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { mockCategoryData } from "@/data/mock-data";
+// import { mockCategoryData } from "@/data/mock-data"; // Assuming this might change or be removed
+
+// Placeholder if mockCategoryData structure changes
+const uniqueCategoriesFromMock = ["all", "electronics", "clothing", "groceries"];
+
 
 type FiltersProps = {
   currentFilters: {
@@ -29,7 +33,8 @@ export function Filters({ currentFilters, onFilterChange }: FiltersProps) {
     onFilterChange({ ...currentFilters, category });
   };
 
-  const uniqueCategories = ["all", ...new Set(mockCategoryData.map(cat => cat.name.toLowerCase()))];
+  // const uniqueCategories = ["all", ...new Set(mockCategoryData.map(cat => cat.name.toLowerCase()))];
+  const uniqueCategories = uniqueCategoriesFromMock;
 
 
   return (
