@@ -385,3 +385,113 @@ export const mockProductListItems: ProductListItem[] = [
 export const totalQuizCount = mockProductListItems.length; // Or a static number like 145 from image
 export const featuredProductCount = 20; // example
 export const onSaleProductCount = 15; // example
+
+
+// Types for Coupon Code Page
+export type DiscountType = "percentage" | "fixed";
+export type AssignmentType = "all_users" | "specific_user" | "all_categories" | "specific_categories";
+export type CouponStatus = "active" | "inactive" | "expired";
+
+export type Coupon = {
+  id: string;
+  code: string;
+  description: string;
+  discountType: DiscountType;
+  discountValue: number;
+  startDate: Date;
+  expiryDate: Date;
+  usageLimit: number;
+  usedCount: number;
+  minPurchaseAmount?: number;
+  assignmentType: AssignmentType;
+  assignedToUser?: string; // User ID if specific_user
+  assignedToCategories?: string[]; // Category IDs if specific_categories
+  status: CouponStatus;
+};
+
+export type CouponStatSummary = {
+  title: string;
+  value: string;
+  icon: React.ElementType; // Lucide icon
+  iconColor: string;
+};
+
+export const mockCouponStats: CouponStatSummary[] = [
+  { title: "Total Coupons", value: "125", icon: Ticket, iconColor: "text-blue-500" },
+  { title: "Active Coupons", value: "78", icon: CheckCircle2, iconColor: "text-green-500" },
+  { title: "Coupons Redeemed (Month)", value: "1.2K", icon: Users, iconColor: "text-purple-500" },
+  { title: "Expired Coupons", value: "12", icon: XCircle, iconColor: "text-red-500" },
+];
+
+import { Ticket, CheckCircle2, Users, XCircle } from "lucide-react"; // Import icons for CouponStatSummary
+
+export const mockCoupons: Coupon[] = [
+  {
+    id: "cpn1",
+    code: "SUMMER25",
+    description: "25% off on all summer collection quizzes.",
+    discountType: "percentage",
+    discountValue: 25,
+    startDate: new Date("2024-06-01"),
+    expiryDate: new Date("2024-08-31"),
+    usageLimit: 1000,
+    usedCount: 250,
+    minPurchaseAmount: 500,
+    assignmentType: "all_categories",
+    status: "active",
+  },
+  {
+    id: "cpn2",
+    code: "NEWUSER100",
+    description: "Flat ₹100 off for new users on first purchase.",
+    discountType: "fixed",
+    discountValue: 100,
+    startDate: new Date("2024-01-01"),
+    expiryDate: new Date("2024-12-31"),
+    usageLimit: 500,
+    usedCount: 150,
+    assignmentType: "all_users",
+    status: "active",
+  },
+  {
+    id: "cpn3",
+    code: "GKMASTER",
+    description: "50% off on General Knowledge category.",
+    discountType: "percentage",
+    discountValue: 50,
+    startDate: new Date("2024-07-01"),
+    expiryDate: new Date("2024-07-31"),
+    usageLimit: 200,
+    usedCount: 180,
+    assignmentType: "specific_categories",
+    assignedToCategories: ["genknow"],
+    status: "inactive", // Example: Manually deactivated
+  },
+  {
+    id: "cpn4",
+    code: "SPECIALUSER007",
+    description: "Special ₹200 off for user #1234567890.",
+    discountType: "fixed",
+    discountValue: 200,
+    startDate: new Date("2024-07-15"),
+    expiryDate: new Date("2024-08-15"),
+    usageLimit: 1,
+    usedCount: 0,
+    assignmentType: "specific_user",
+    assignedToUser: mockCustomers[0]?.id, // Assign to the first mock customer
+    status: "active",
+  },
+  {
+    id: "cpn5",
+    code: "EXPIRED01",
+    description: "Old expired coupon.",
+    discountType: "percentage",
+    discountValue: 10,
+    startDate: new Date("2023-01-01"),
+    expiryDate: new Date("2023-03-31"),
+    usageLimit: 100,
+    usedCount: 95,
+    assignmentType: "all_categories",
+    status: "expired",
+  },
+];

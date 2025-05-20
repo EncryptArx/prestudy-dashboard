@@ -47,7 +47,7 @@ export default function AppSidebar() {
         { href: "/", label: "Dashboard", icon: LayoutDashboard, activePaths: ["/"] },
         { href: "/order-management", label: "Order Management", icon: ShoppingCart, activePaths: ["/order-management"] },
         { href: "/all-users", label: "All Users", icon: Users, activePaths: ["/all-users"] },
-        { href: "#", label: "Coupon Code", icon: Ticket },
+        { href: "/coupon-code", label: "Coupon Code", icon: Ticket, activePaths: ["/coupon-code"] },
         { href: "/categories", label: "Categories", icon: LayoutGrid, activePaths: ["/categories"] },
         { href: "#", label: "Transaction", icon: ListOrdered },
         { href: "#", label: "Leaderboard", icon: Star }, 
