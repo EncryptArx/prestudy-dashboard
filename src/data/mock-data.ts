@@ -319,3 +319,69 @@ const generateRandomCustomerData = (id: number): Customer => {
 };
 
 export const mockCustomers: Customer[] = Array.from({ length: 25 }, (_, i) => generateRandomCustomerData(i + 1));
+
+
+// Types for Categories Page
+export type DiscoverCategory = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  imageHint: string;
+  itemCount?: number; // For Topic/Exam categories
+  bgColorClass?: string; // For specific background colors of Topic/Exam
+  textColorClass?: string; // For specific text colors
+};
+
+export type ProductListItem = {
+  id: string;
+  name: string;
+  createdDate: string;
+  category: string;
+};
+
+export const mockDiscoverCategories: DiscoverCategory[] = [
+  { 
+    id: "topic", 
+    title: "Topic Categories", 
+    imageUrl: "https://placehold.co/80x60.png", 
+    imageHint: "education concepts",
+    itemCount: 120, 
+    bgColorClass: "bg-green-100 dark:bg-green-800/30", 
+    textColorClass: "text-green-700 dark:text-green-300" 
+  },
+  { 
+    id: "exam", 
+    title: "Exam Categories", 
+    imageUrl: "https://placehold.co/80x60.png", 
+    imageHint: "exam preparation",
+    itemCount: 45, 
+    bgColorClass: "bg-purple-100 dark:bg-purple-800/30", 
+    textColorClass: "text-purple-700 dark:text-purple-300" 
+  },
+  { id: "genknow", title: "General Knowledge", imageUrl: "https://placehold.co/60x40.png", imageHint: "knowledge quiz" },
+  { id: "assgk", title: "Assam GK", imageUrl: "https://placehold.co/60x40.png", imageHint: "assam map" },
+  { id: "quant", title: "Quantitative Aptitude", imageUrl: "https://placehold.co/60x40.png", imageHint: "math symbols" },
+  { id: "reason", title: "Reasoning", imageUrl: "https://placehold.co/60x40.png", imageHint: "brain puzzle" },
+  { id: "adre", title: "ADRE", imageUrl: "https://placehold.co/60x40.png", imageHint: "government exam" },
+  { id: "assampol", title: "Assam Police", imageUrl: "https://placehold.co/60x40.png", imageHint: "police badge" },
+  { id: "ssc", title: "SSC", imageUrl: "https://placehold.co/60x40.png", imageHint: "exam paper" },
+  { id: "tet", title: "TET", imageUrl: "https://placehold.co/60x40.png", imageHint: "teacher exam" },
+];
+
+export const mockProductListItems: ProductListItem[] = [
+  { id: "prod1", name: "ADRE Quiz Set", createdDate: "01-01-2025", category: "Assam GK" },
+  { id: "prod2", name: "General Knowledge Challenge Pack", createdDate: "15-12-2024", category: "General Knowledge" },
+  { id: "prod3", name: "Quantitative Aptitude Masterclass", createdDate: "10-11-2024", category: "Quantitative Aptitude" },
+  { id: "prod4", name: "Reasoning Skills Booster", createdDate: "05-10-2024", category: "Reasoning" },
+  { id: "prod5", name: "Assam Police Exam Prep Kit", createdDate: "20-09-2024", category: "Assam Police" },
+  { id: "prod6", name: "SSC CGL Full Course", createdDate: "01-09-2024", category: "SSC" },
+  { id: "prod7", name: "TET Paper 1 & 2 Combo", createdDate: "15-08-2024", category: "TET" },
+  { id: "prod8", name: "ADRE Advanced Mock Tests", createdDate: "12-01-2025", category: "ADRE" },
+  { id: "prod9", name: "GK Current Affairs 2024", createdDate: "05-01-2025", category: "General Knowledge" },
+  { id: "prod10", name: "Speed Maths Techniques", createdDate: "18-12-2024", category: "Quantitative Aptitude" },
+  { id: "prod11", name: "Logical Reasoning Puzzles", createdDate: "22-11-2024", category: "Reasoning" },
+];
+
+export const totalQuizCount = mockProductListItems.length; // Or a static number like 145 from image
+export const featuredProductCount = 20; // example
+export const onSaleProductCount = 15; // example
