@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,14 +14,27 @@ import { cn } from "@/lib/utils";
 import { usePageTitle } from '@/contexts/PageTitleContext';
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const TransactionStatusBadge = ({ status }: { status: TransactionStatus }) => {
   const statusConfig = {
     Paid: { icon: CheckCircle2, color: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-500/20", label: "Paid" },
     Pending: { icon: Clock, color: "text-yellow-600 dark:text-yellow-400", bgColor: "bg-yellow-100 dark:bg-yellow-500/20", label: "Pending" },
     Failed: { icon: XCircle, color: "text-red-600 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-500/20", label: "Failed" },
-    Complete: { icon: CheckCircle2, color: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-500/20", label: "Paid" }, // Assuming Complete from OrderStatus is 'Paid'
-    Canceled: { icon: XCircle, color: "text-red-600 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-500/20", label: "Failed" }, // Assuming Canceled from OrderStatus is 'Failed'
+    Complete: { icon: CheckCircle2, color: "text-green-600 dark:text-green-400", bgColor: "bg-green-100 dark:bg-green-500/20", label: "Paid" }, 
+    Canceled: { icon: XCircle, color: "text-red-600 dark:text-red-400", bgColor: "bg-red-100 dark:bg-red-500/20", label: "Failed" }, 
   };
   const config = statusConfig[status] || { icon: AlertCircle, color: "text-muted-foreground", bgColor: "bg-muted", label: status };
   const Icon = config.icon;
@@ -51,6 +64,8 @@ const PaymentMethodDisplay = ({ method }: { method: PaymentMethod }) => {
 
 export default function TransactionsPage() {
   const { setPageTitle } = usePageTitle();
+  const { toast } = useToast();
+  const [transactions, setTransactions] = React.useState<Transaction[]>([...mockTransactionsData]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const transactionsPerPage = 10;
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -59,25 +74,27 @@ export default function TransactionsPage() {
 
   React.useEffect(() => {
     setPageTitle("Transactions");
+    setTransactions([...mockTransactionsData]);
   }, [setPageTitle]);
 
-  const allStatuses = React.useMemo(() => Array.from(new Set(mockTransactionsData.map(t => t.status))), []);
+  const allStatuses = React.useMemo(() => Array.from(new Set(mockTransactionsData.map(t => t.status as TransactionStatus))), []);
   const allPaymentMethods = React.useMemo(() => Array.from(new Set(mockTransactionsData.map(t => t.paymentMethod))), []);
 
 
   const filteredTransactions = React.useMemo(() => {
-    return mockTransactionsData.filter(transaction => {
+    return transactions.filter(transaction => {
       const matchesSearch = searchTerm === "" ||
+        transaction.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         transaction.customerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         transaction.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         transaction.amount.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesStatus = statusFilter.length === 0 || statusFilter.includes(transaction.status);
+      const matchesStatus = statusFilter.length === 0 || statusFilter.includes(transaction.status as TransactionStatus);
       const matchesPaymentMethod = paymentMethodFilter.length === 0 || paymentMethodFilter.includes(transaction.paymentMethod);
 
       return matchesSearch && matchesStatus && matchesPaymentMethod;
     });
-  }, [searchTerm, statusFilter, paymentMethodFilter]);
+  }, [transactions, searchTerm, statusFilter, paymentMethodFilter]);
 
   const paginatedTransactions = filteredTransactions.slice(
     (currentPage - 1) * transactionsPerPage,
@@ -126,6 +143,19 @@ export default function TransactionsPage() {
     setCurrentPage(1);
   };
 
+  const handleDeleteTransaction = (transactionId: string) => {
+    const transactionToDelete = transactions.find(t => t.id === transactionId);
+    setTransactions(prev => prev.filter(t => t.id !== transactionId));
+    const globalIndex = mockTransactionsData.findIndex(t => t.id === transactionId);
+    if (globalIndex > -1) mockTransactionsData.splice(globalIndex, 1);
+
+    toast({
+      title: "Transaction Deleted",
+      description: `Transaction ID "${transactionToDelete?.id}" has been removed.`,
+      variant: "destructive",
+    });
+  };
+
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
@@ -137,7 +167,7 @@ export default function TransactionsPage() {
                 <CardDescription>View and manage all recorded transactions.</CardDescription>
             </div>
             <div className="flex items-center gap-2">
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => toast({ title: "Export Clicked", description: "This feature is not yet implemented."})}>
                     <Download className="mr-2 h-4 w-4" /> Export All
                 </Button>
             </div>
@@ -221,14 +251,32 @@ export default function TransactionsPage() {
                       <TransactionStatusBadge status={transaction.status as TransactionStatus} />
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => console.log('View transaction', transaction.id)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast({ title: "View Transaction", description: `Details for ID ${transaction.id}. (Not implemented)`})}>
                         <Eye className="h-4 w-4" />
                         <span className="sr-only">View Details</span>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/80" onClick={() => console.log('Delete transaction', transaction.id)}>
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete Transaction</span>
-                      </Button>
+                       <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/80">
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">Delete Transaction</span>
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete transaction ID "{transaction.id}".
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteTransaction(transaction.id)} className={buttonVariants({ variant: "destructive" })}>
+                                    Delete
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -287,5 +335,3 @@ export default function TransactionsPage() {
     </div>
   );
 }
-
-    

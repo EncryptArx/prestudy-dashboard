@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
@@ -18,6 +18,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   PlusCircle,
   Edit,
@@ -97,13 +108,17 @@ const CouponStatusBadge = ({ status }: { status: CouponStatus }) => {
 export default function CouponCodePage() {
   const { setPageTitle } = usePageTitle();
   const { toast } = useToast();
+  const [coupons, setCoupons] = React.useState<Coupon[]>([...mockCoupons]);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
   const couponsPerPage = 7;
+  const [searchTerm, setSearchTerm] = React.useState(""); // Added for search functionality
 
   React.useEffect(() => {
     setPageTitle("Coupon Management");
+    setCoupons([...mockCoupons]); // Re-sync with global mock data on mount or if mockCoupons changes
   }, [setPageTitle]);
+
 
   const form = useForm<CouponFormValues>({
     resolver: zodResolver(couponFormSchema),
@@ -126,21 +141,49 @@ export default function CouponCodePage() {
   const assignmentType = form.watch("assignmentType");
 
   function onSubmit(data: CouponFormValues) {
-    // In a real app, you would send this data to your backend
-    console.log(data);
+    const newCoupon: Coupon = {
+        id: `cpn${coupons.length + 1 + Date.now()}`,
+        code: data.code,
+        description: data.description,
+        discountType: data.discountType,
+        discountValue: data.discountValue,
+        startDate: data.startDate,
+        expiryDate: data.expiryDate,
+        usageLimit: data.usageLimit,
+        usedCount: 0, // New coupons start with 0 used
+        minPurchaseAmount: data.minPurchaseAmount,
+        assignmentType: data.assignmentType,
+        assignedToUser: data.assignedToUser,
+        assignedToCategories: data.assignedToCategories,
+        status: data.status ? "active" : "inactive",
+    };
+
+    setCoupons(prev => [newCoupon, ...prev]); // Add to local state
+    // Also add to global mockCoupons for persistence across navigation (demo only)
+    mockCoupons.unshift(newCoupon);
+
+
     toast({
       title: "Coupon Created",
       description: `Coupon ${data.code} has been successfully created.`,
     });
-    form.reset(); // Reset form after submission
-    setIsFormOpen(false); // Close the form card
+    form.reset();
+    setIsFormOpen(false);
   }
   
-  const paginatedCoupons = mockCoupons.slice(
+  const filteredCoupons = React.useMemo(() => {
+    return coupons.filter(coupon => 
+        coupon.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        coupon.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [coupons, searchTerm]);
+
+
+  const paginatedCoupons = filteredCoupons.slice(
     (currentPage - 1) * couponsPerPage,
     currentPage * couponsPerPage
   );
-  const totalPages = Math.ceil(mockCoupons.length / couponsPerPage);
+  const totalPages = Math.ceil(filteredCoupons.length / couponsPerPage);
 
   const getPaginationItems = () => {
     const items = [];
@@ -174,11 +217,22 @@ export default function CouponCodePage() {
     form.setValue("code", randomCode);
   };
 
+  const handleDeleteCoupon = (couponId: string) => {
+    setCoupons(prev => prev.filter(c => c.id !== couponId));
+    // Also remove from global mockCoupons (demo only)
+    const index = mockCoupons.findIndex(c => c.id === couponId);
+    if (index > -1) mockCoupons.splice(index, 1);
+    toast({
+        title: "Coupon Deleted",
+        description: "The coupon has been removed.",
+        variant: "destructive",
+    });
+  };
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-foreground md:hidden">Coupon Management</h1> {/* Hidden on md+ as header shows it */}
+        <h1 className="text-2xl font-semibold text-foreground md:hidden">Coupon Management</h1>
         <div className="flex items-center gap-2 ml-auto">
           <Button onClick={() => setIsFormOpen(!isFormOpen)}>
             <PlusCircle className="mr-2 h-4 w-4" /> {isFormOpen ? "Cancel" : "Add New Coupon"}
@@ -314,7 +368,7 @@ export default function CouponCodePage() {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) => date < new Date(new Date().setHours(0,0,0,0)) } // Disable past dates
+                              disabled={(date) => date < new Date(new Date().setHours(0,0,0,0)) }
                               initialFocus
                             />
                           </PopoverContent>
@@ -434,7 +488,6 @@ export default function CouponCodePage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Select Categories</FormLabel>
-                          {/* Basic multi-select using multiple single Selects - can be enhanced with a proper multi-select component */}
                           <Select onValueChange={(value) => field.onChange(value ? [value] : [])} >
                             <FormControl>
                               <SelectTrigger>
@@ -499,9 +552,9 @@ export default function CouponCodePage() {
             <div className="flex items-center gap-2">
               <div className="relative w-full md:max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search coupons..." className="pl-8 w-full" />
+                <Input placeholder="Search coupons..." className="pl-8 w-full" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
               </div>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={() => toast({ title: "Filter Clicked", description: "This feature is not yet implemented."})}>
                 <ListFilter className="h-4 w-4" />
                 <span className="sr-only">Filter</span>
               </Button>
@@ -544,14 +597,32 @@ export default function CouponCodePage() {
                       <CouponStatusBadge status={coupon.status} />
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary" onClick={() => toast({ title: "Edit Coupon Clicked", description: `Editing ${coupon.code}. (Not implemented)`})}>
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Edit Coupon</span>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/80">
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Delete Coupon</span>
-                      </Button>
+                       <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive/80">
+                            <Trash2 className="h-4 w-4" />
+                             <span className="sr-only">Delete Coupon</span>
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently delete the coupon "{coupon.code}".
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteCoupon(coupon.id)} className={buttonVariants({ variant: "destructive" })}>
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TableCell>
                   </TableRow>
                 ))}

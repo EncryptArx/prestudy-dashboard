@@ -8,13 +8,26 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { mockQuizListItems, quizCategories, quizDifficulties, type QuizListItem, type QuizStatus, type QuizDifficulty } from "@/data/mock-data"; 
+import { mockQuizListItems, quizCategories, quizDifficulties, type QuizListItem, type QuizStatus, type QuizDifficulty } from "@/data/mock-data";
 import { PlusCircle, MoreVertical, Search, ListFilter, Download, Eye, Edit, Trash2, Archive, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePageTitle } from '@/contexts/PageTitleContext';
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const QuizStatusBadge = ({ status }: { status: QuizStatus }) => {
   const statusConfig = {
@@ -39,6 +52,8 @@ const QuizDifficultyBadge = ({ difficulty }: { difficulty: QuizDifficulty }) => 
 
 export default function QuizListPage() {
   const { setPageTitle } = usePageTitle();
+  const { toast } = useToast();
+  const [quizzes, setQuizzes] = React.useState<QuizListItem[]>([...mockQuizListItems]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const quizzesPerPage = 10;
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -49,14 +64,16 @@ export default function QuizListPage() {
 
   React.useEffect(() => {
     setPageTitle("Quiz List");
-  }, [setPageTitle]);
+    // Re-initialize from mock data if it changes (e.g., after adding a quiz on another page)
+    // This is a simple way to reflect changes from `mockQuizListItems`
+    setQuizzes([...mockQuizListItems]);
+  }, [setPageTitle, mockQuizListItems]); // Add mockQuizListItems dependency
 
   const allStatuses: QuizStatus[] = ["Published", "Draft", "Archived"];
   const allDifficulties: QuizDifficulty[] = ["Easy", "Medium", "Hard"];
-  // quizCategories is already imported {value, label}
 
   const filteredQuizzes = React.useMemo(() => {
-    return mockQuizListItems.filter(quiz => {
+    return quizzes.filter(quiz => {
       const matchesSearch = searchTerm === "" ||
         quiz.title.toLowerCase().includes(searchTerm.toLowerCase());
       
@@ -66,7 +83,7 @@ export default function QuizListPage() {
 
       return matchesSearch && matchesStatus && matchesDifficulty && matchesCategory;
     });
-  }, [searchTerm, statusFilter, difficultyFilter, categoryFilter]);
+  }, [quizzes, searchTerm, statusFilter, difficultyFilter, categoryFilter]);
 
   const paginatedQuizzes = filteredQuizzes.slice(
     (currentPage - 1) * quizzesPerPage,
@@ -97,6 +114,28 @@ export default function QuizListPage() {
     setCurrentPage(1);
   };
 
+  const handleQuizStatusChange = (quizId: string, newStatus: QuizStatus) => {
+    setQuizzes(prevQuizzes =>
+      prevQuizzes.map(quiz =>
+        quiz.id === quizId ? { ...quiz, status: newStatus, lastUpdatedDate: new Date().toISOString().split('T')[0] } : quiz
+      )
+    );
+    toast({
+      title: `Quiz ${newStatus}`,
+      description: `The quiz has been ${newStatus.toLowerCase()}.`,
+    });
+  };
+
+  const handleDeleteQuiz = (quizId: string) => {
+    setQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz.id !== quizId));
+    toast({
+      title: "Quiz Deleted",
+      description: "The quiz has been removed.",
+      variant: "destructive"
+    });
+  };
+
+
   return (
     <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
       <Card className="shadow-lg">
@@ -112,7 +151,7 @@ export default function QuizListPage() {
                         <PlusCircle className="mr-2 h-4 w-4" /> Add New Quiz
                     </Button>
                 </Link>
-                <Button variant="outline">
+                <Button variant="outline" onClick={() => toast({ title: "Export All Clicked", description: "This feature is not yet implemented."})}>
                     <Download className="mr-2 h-4 w-4" /> Export All
                 </Button>
             </div>
@@ -181,13 +220,34 @@ export default function QuizListPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => console.log('View quiz', quiz.id)}><Eye className="mr-2 h-4 w-4" /> View</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => console.log('Edit quiz', quiz.id)}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast({ title: "View Quiz Clicked", description: `Details for ${quiz.title}`})}><Eye className="mr-2 h-4 w-4" /> View</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast({ title: "Edit Quiz Clicked", description: `Editing ${quiz.title}. (Not implemented)`})}><Edit className="mr-2 h-4 w-4" /> Edit</DropdownMenuItem>
                            <DropdownMenuSeparator />
-                           {quiz.status !== "Published" && <DropdownMenuItem onClick={() => console.log('Publish quiz', quiz.id)} className="text-green-600 focus:text-green-700"><Rocket className="mr-2 h-4 w-4" /> Publish</DropdownMenuItem>}
-                           {quiz.status !== "Archived" && <DropdownMenuItem onClick={() => console.log('Archive quiz', quiz.id)}><Archive className="mr-2 h-4 w-4" /> Archive</DropdownMenuItem>}
+                           {quiz.status !== "Published" && <DropdownMenuItem onClick={() => handleQuizStatusChange(quiz.id, "Published")} className="text-green-600 focus:text-green-700"><Rocket className="mr-2 h-4 w-4" /> Publish</DropdownMenuItem>}
+                           {quiz.status !== "Archived" && <DropdownMenuItem onClick={() => handleQuizStatusChange(quiz.id, "Archived")}><Archive className="mr-2 h-4 w-4" /> Archive</DropdownMenuItem>}
+                           {quiz.status === "Archived" && <DropdownMenuItem onClick={() => handleQuizStatusChange(quiz.id, "Draft")}><Edit className="mr-2 h-4 w-4" /> Unarchive to Draft</DropdownMenuItem>}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => console.log('Delete quiz', quiz.id)} className="text-destructive focus:text-destructive/90"><Trash2 className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+                           <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive/90">
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently delete the quiz "{quiz.title}".
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteQuiz(quiz.id)} className={buttonVariants({ variant: "destructive" })}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -228,5 +288,3 @@ export default function QuizListPage() {
     </div>
   );
 }
-
-    

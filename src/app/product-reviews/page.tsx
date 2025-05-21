@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -15,6 +15,18 @@ import { cn } from "@/lib/utils";
 import { usePageTitle } from '@/contexts/PageTitleContext';
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ReviewStatusBadge = ({ status }: { status: ReviewStatus }) => {
   const statusConfig = {
@@ -50,6 +62,8 @@ const RatingStars = ({ rating }: { rating: number }) => {
 
 export default function ProductReviewsPage() {
   const { setPageTitle } = usePageTitle();
+  const { toast } = useToast();
+  const [reviews, setReviews] = React.useState<ProductReview[]>([...mockProductReviews]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const reviewsPerPage = 10;
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -58,13 +72,14 @@ export default function ProductReviewsPage() {
 
   React.useEffect(() => {
     setPageTitle("Product Reviews");
+    setReviews([...mockProductReviews]);
   }, [setPageTitle]);
 
   const allStatuses: ReviewStatus[] = ["Pending", "Approved", "Rejected"];
   const allRatings: number[] = [1, 2, 3, 4, 5];
 
   const filteredReviews = React.useMemo(() => {
-    return mockProductReviews.filter(review => {
+    return reviews.filter(review => {
       const matchesSearch = searchTerm === "" ||
         review.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         review.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -75,7 +90,7 @@ export default function ProductReviewsPage() {
 
       return matchesSearch && matchesStatus && matchesRating;
     });
-  }, [searchTerm, statusFilter, ratingFilter]);
+  }, [reviews, searchTerm, statusFilter, ratingFilter]);
 
   const paginatedReviews = filteredReviews.slice(
     (currentPage - 1) * reviewsPerPage,
@@ -103,6 +118,32 @@ export default function ProductReviewsPage() {
   const handleFilterChange = (setter: React.Dispatch<React.SetStateAction<any[]>>, value: any) => {
     setter((prev: any[]) => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
     setCurrentPage(1);
+  };
+
+  const handleReviewStatusChange = (reviewId: string, newStatus: ReviewStatus) => {
+    setReviews(prevReviews => 
+      prevReviews.map(r => r.id === reviewId ? {...r, status: newStatus, date: new Date().toISOString()} : r)
+    );
+    const globalIndex = mockProductReviews.findIndex(r => r.id === reviewId);
+    if (globalIndex > -1) mockProductReviews[globalIndex] = {...mockProductReviews[globalIndex], status: newStatus, date: new Date().toISOString()};
+    
+    toast({
+      title: `Review ${newStatus}`,
+      description: `The review has been ${newStatus.toLowerCase()}.`
+    });
+  };
+
+  const handleDeleteReview = (reviewId: string) => {
+    const reviewToDelete = reviews.find(r => r.id === reviewId);
+    setReviews(prevReviews => prevReviews.filter(r => r.id !== reviewId));
+    const globalIndex = mockProductReviews.findIndex(r => r.id === reviewId);
+    if (globalIndex > -1) mockProductReviews.splice(globalIndex, 1);
+    
+    toast({
+      title: "Review Deleted",
+      description: `Review by ${reviewToDelete?.userName} for "${reviewToDelete?.productName}" has been removed.`,
+      variant: "destructive"
+    });
   };
 
   return (
@@ -183,13 +224,40 @@ export default function ProductReviewsPage() {
                         <DropdownMenuContent align="end">
                           {review.status === "Pending" && (
                             <>
-                              <DropdownMenuItem className="text-green-600 focus:text-green-700"><ThumbsUp className="mr-2 h-4 w-4" /> Approve</DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600 focus:text-red-700"><ThumbsDown className="mr-2 h-4 w-4" /> Reject</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleReviewStatusChange(review.id, "Approved")} className="text-green-600 focus:text-green-700"><ThumbsUp className="mr-2 h-4 w-4" /> Approve</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleReviewStatusChange(review.id, "Rejected")} className="text-red-600 focus:text-red-700"><ThumbsDown className="mr-2 h-4 w-4" /> Reject</DropdownMenuItem>
                               <DropdownMenuSeparator/>
                             </>
                           )}
-                          <DropdownMenuItem><Edit3 className="mr-2 h-4 w-4" /> Edit Review</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive focus:text-destructive/90"><Trash2 className="mr-2 h-4 w-4" /> Delete</DropdownMenuItem>
+                           {review.status === "Rejected" && ( // Option to re-approve a rejected one
+                            <DropdownMenuItem onClick={() => handleReviewStatusChange(review.id, "Approved")} className="text-green-600 focus:text-green-700"><ThumbsUp className="mr-2 h-4 w-4" /> Approve</DropdownMenuItem>
+                          )}
+                          {review.status === "Approved" && ( // Option to make pending again
+                            <DropdownMenuItem onClick={() => handleReviewStatusChange(review.id, "Pending")} className="text-yellow-600 focus:text-yellow-700"><AlertTriangle className="mr-2 h-4 w-4" /> Mark as Pending</DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem onClick={() => toast({ title: "Edit Review Clicked", description: `Editing review by ${review.userName}. (Not implemented)`})}><Edit3 className="mr-2 h-4 w-4" /> Edit Review</DropdownMenuItem>
+                          <DropdownMenuSeparator/>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                               <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive/90">
+                                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently delete the review by {review.userName} for "{review.productName}".
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteReview(review.id)} className={buttonVariants({ variant: "destructive" })}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

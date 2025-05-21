@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -20,10 +20,23 @@ import {
   type Customer,
   type CustomerStatus,
 } from "@/data/mock-data";
-import { MoreVertical, ArrowUp, ArrowDown, Trash2, Eye } from "lucide-react"; // Changed Pencil to Eye
+import { MoreVertical, ArrowUp, ArrowDown, Trash2, Eye } from "lucide-react"; 
 import { cn } from "@/lib/utils";
 import { usePageTitle } from '@/contexts/PageTitleContext';
-import { UserDetailsDialog } from "@/components/user/user-details-dialog"; // Import the new dialog
+import { UserDetailsDialog } from "@/components/user/user-details-dialog"; 
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -47,6 +60,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const SingleUserStatCard = ({ title, value, percentageChange, isPositiveChange, periodLabel }: UserStatCardData) => {
   const TrendIcon = isPositiveChange ? ArrowUp : ArrowDown;
   const trendColor = isPositiveChange ? "text-green-500" : "text-red-500";
+  const { toast } = useToast();
 
   return (
     <Card className="shadow-sm">
@@ -59,8 +73,8 @@ const SingleUserStatCard = ({ title, value, percentageChange, isPositiveChange, 
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuItem>Export</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => toast({ title: "View Details Clicked", description: "This feature is not yet implemented."})}>View Details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => toast({ title: "Export Clicked", description: "This feature is not yet implemented."})}>Export</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </CardHeader>
@@ -94,6 +108,8 @@ const CustomerStatusBadge = ({ status }: { status: CustomerStatus }) => {
 
 export default function AllUsersPage() {
   const { setPageTitle } = usePageTitle();
+  const { toast } = useToast();
+  const [customers, setCustomers] = React.useState<Customer[]>([...mockCustomers]);
   const [currentPage, setCurrentPage] = React.useState(1);
   const usersPerPage = 8; 
 
@@ -102,16 +118,16 @@ export default function AllUsersPage() {
 
   React.useEffect(() => {
     setPageTitle("Customers");
+    setCustomers([...mockCustomers]);
   }, [setPageTitle]);
 
-  const customersData: Customer[] = mockCustomers;
   const customerOverviewChartData: CustomerOverviewChartPoint[] = mockCustomerOverviewChartData;
 
-  const paginatedCustomers = customersData.slice(
+  const paginatedCustomers = customers.slice(
     (currentPage - 1) * usersPerPage,
     currentPage * usersPerPage
   );
-  const totalPages = Math.ceil(customersData.length / usersPerPage);
+  const totalPages = Math.ceil(customers.length / usersPerPage);
 
   const yAxisFormatter = (value: number) => {
     if (value >= 1000) return `${value / 1000}k`;
@@ -150,6 +166,20 @@ export default function AllUsersPage() {
     setSelectedCustomer(customer);
     setIsUserDetailsDialogOpen(true);
   };
+
+  const handleDeleteCustomer = (customerId: string) => {
+    const customerToDelete = customers.find(c => c.id === customerId);
+    setCustomers(prev => prev.filter(c => c.id !== customerId));
+    const globalIndex = mockCustomers.findIndex(c => c.id === customerId);
+    if (globalIndex > -1) mockCustomers.splice(globalIndex, 1);
+
+    toast({
+      title: "Customer Deleted",
+      description: `Customer "${customerToDelete?.name}" has been removed.`,
+      variant: "destructive",
+    });
+  };
+
 
   return (
     <>
@@ -190,8 +220,8 @@ export default function AllUsersPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Download Report</DropdownMenuItem>
-                        <DropdownMenuItem>Settings</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toast({ title: "Download Report Clicked", description: "This feature is not yet implemented."})}>Download Report</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => toast({ title: "Settings Clicked", description: "This feature is not yet implemented."})}>Settings</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -270,10 +300,28 @@ export default function AllUsersPage() {
                             <Eye className="h-4 w-4" />
                             <span className="sr-only">View User Details</span>
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete User</span>
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">Delete User</span>
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the customer "{customer.name}".
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteCustomer(customer.id)} className={buttonVariants({ variant: "destructive" })}>
+                                    Delete
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                            </AlertDialog>
                         </TableCell>
                       </TableRow>
                     ))}

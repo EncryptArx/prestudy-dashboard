@@ -19,20 +19,30 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ControlAuthorityPage() {
   const { setPageTitle } = usePageTitle();
+  const { toast } = useToast();
   const [currentPage, setCurrentPage] = React.useState(1);
   const permissionsPerPage = 10;
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [permissions, setPermissions] = React.useState<Permission[]>(mockPermissions);
+  const [permissions, setPermissions] = React.useState<Permission[]>([...mockPermissions]);
+  const [isAddPermissionDialogOpen, setIsAddPermissionDialogOpen] = React.useState(false);
+
+  // Form state for Add/Edit Dialog
+  const [featureName, setFeatureName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+  const [selectedRoles, setSelectedRoles] = React.useState<AdminRoleType[]>([]);
 
   React.useEffect(() => {
     setPageTitle("Control Authority");
+    setPermissions([...mockPermissions]);
   }, [setPageTitle]);
 
   const filteredPermissions = permissions.filter(permission =>
@@ -63,16 +73,36 @@ export default function ControlAuthorityPage() {
     return items;
   };
 
-  const handleAddPermission = (newPermissionData: Omit<Permission, 'id' | 'lastModified'>) => {
+  const handleAddPermissionSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
      const newPermission: Permission = {
-      ...newPermissionData,
-      id: `perm${permissions.length + 1}`,
+      id: `perm${permissions.length + 1 + Date.now()}`,
+      featureName,
+      description,
+      rolesAllowed: selectedRoles,
       lastModified: new Date().toISOString().split('T')[0],
     };
-    setPermissions(prev => [...prev, newPermission]);
+    setPermissions(prev => [newPermission, ...prev]);
+    mockPermissions.unshift(newPermission); // Add to global for demo
+    
+    toast({ title: "Permission Added", description: `Permission "${newPermission.featureName}" has been added.` });
+    setIsAddPermissionDialogOpen(false);
+    // Reset form
+    setFeatureName("");
+    setDescription("");
+    setSelectedRoles([]);
   };
   
   const adminRoleTypes: AdminRoleType[] = ["Super Admin", "Content Manager", "User Manager", "Support Staff"];
+
+  const handleRoleCheckboxChange = (role: AdminRoleType, checked: boolean | 'indeterminate') => {
+    if (checked) {
+      setSelectedRoles(prev => [...prev, role]);
+    } else {
+      setSelectedRoles(prev => prev.filter(r => r !== role));
+    }
+  };
+
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-6 lg:p-8">
@@ -83,9 +113,9 @@ export default function ControlAuthorityPage() {
               <CardTitle>Control Authority & Permissions</CardTitle>
               <CardDescription>Manage feature access permissions for different admin roles.</CardDescription>
             </div>
-            <Dialog>
+            <Dialog open={isAddPermissionDialogOpen} onOpenChange={setIsAddPermissionDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <Button onClick={() => setIsAddPermissionDialogOpen(true)}>
                   <PlusCircle className="mr-2 h-4 w-4" /> Add New Permission
                 </Button>
               </DialogTrigger>
@@ -96,37 +126,33 @@ export default function ControlAuthorityPage() {
                     Define a new feature and assign roles that can access it.
                   </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget);
-                  const selectedRoles = adminRoleTypes.filter(role => formData.get(role) === 'on');
-                  handleAddPermission({
-                    featureName: formData.get('featureName') as string,
-                    description: formData.get('description') as string,
-                    rolesAllowed: selectedRoles,
-                  });
-                  // TODO: Close dialog, clear form
-                }}>
+                <form onSubmit={handleAddPermissionSubmit}>
                   <div className="grid gap-4 py-4">
                     <div className="space-y-1">
                       <Label htmlFor="featureName">Feature Name</Label>
-                      <Input id="featureName" name="featureName" required />
+                      <Input id="featureName" name="featureName" value={featureName} onChange={e => setFeatureName(e.target.value)} required />
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor="description">Description</Label>
-                      <Textarea id="description" name="description" required />
+                      <Textarea id="description" name="description" value={description} onChange={e => setDescription(e.target.value)} required />
                     </div>
                     <div className="space-y-2">
                       <Label>Allowed Roles</Label>
                       {adminRoleTypes.map(role => (
                         <div key={role} className="flex items-center space-x-2">
-                          <Checkbox id={role} name={role} />
+                          <Checkbox 
+                            id={role} 
+                            name={role} 
+                            checked={selectedRoles.includes(role)}
+                            onCheckedChange={(checked) => handleRoleCheckboxChange(role, checked)}
+                          />
                           <Label htmlFor={role} className="font-normal">{role}</Label>
                         </div>
                       ))}
                     </div>
                   </div>
                   <DialogFooter>
+                     <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
                     <Button type="submit">Save Permission</Button>
                   </DialogFooter>
                 </form>
@@ -168,14 +194,16 @@ export default function ControlAuthorityPage() {
                         {permission.rolesAllowed.map(role => (
                           <Badge key={role} variant="secondary">{role}</Badge>
                         ))}
+                        {permission.rolesAllowed.length === 0 && <Badge variant="outline">None</Badge>}
                       </div>
                     </TableCell>
                     <TableCell>{permission.lastModified}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-primary" onClick={() => toast({title: "Edit Permission Clicked", description: `Editing ${permission.featureName}. (Not Implemented)`})}>
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Edit Permission</span>
                       </Button>
+                       {/* Delete for permissions is less common, usually edit. Add if needed. */}
                     </TableCell>
                   </TableRow>
                 ))}

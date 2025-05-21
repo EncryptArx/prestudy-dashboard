@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,9 +22,23 @@ import {
   DialogDescription,
   DialogFooter,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+
 
 const AdminStatusBadge = ({ status }: { status: AdminUser["status"] }) => {
   const statusConfig = {
@@ -51,13 +65,23 @@ const AdminRoleBadge = ({ role }: { role: AdminRoleType }) => {
 
 export default function AdminRolePage() {
   const { setPageTitle } = usePageTitle();
+  const { toast } = useToast();
   const [currentPage, setCurrentPage] = React.useState(1);
   const adminsPerPage = 10;
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [adminUsers, setAdminUsers] = React.useState<AdminUser[]>(mockAdminUsers);
+  const [adminUsers, setAdminUsers] = React.useState<AdminUser[]>([...mockAdminUsers]);
+  const [isAddAdminDialogOpen, setIsAddAdminDialogOpen] = React.useState(false);
+  
+  // Form state for Add/Edit Dialog (simplified for Add initially)
+  const [adminName, setAdminName] = React.useState("");
+  const [adminEmail, setAdminEmail] = React.useState("");
+  const [adminRole, setAdminRole] = React.useState<AdminRoleType>("Support Staff");
+  const [adminStatus, setAdminStatus] = React.useState<AdminUser["status"]>("Active");
+
 
   React.useEffect(() => {
     setPageTitle("Admin Roles");
+    setAdminUsers([...mockAdminUsers]);
   }, [setPageTitle]);
 
   const filteredAdmins = adminUsers.filter(admin =>
@@ -89,17 +113,48 @@ export default function AdminRolePage() {
     return items;
   };
 
-  const handleAddAdmin = (newAdminData: Omit<AdminUser, 'id' | 'lastLogin' | 'avatarUrl'>) => {
+  const handleAddAdminSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const newAdmin: AdminUser = {
-      ...newAdminData,
-      id: `admin${adminUsers.length + 1}`,
+      id: `admin${adminUsers.length + 1 + Date.now()}`,
+      name: adminName,
+      email: adminEmail,
+      role: adminRole,
+      status: adminStatus,
       lastLogin: new Date().toLocaleString(),
-      avatarUrl: `https://placehold.co/40x40.png?text=${newAdminData.name.substring(0,1)}`
+      avatarUrl: `https://placehold.co/40x40.png?text=${adminName.substring(0,1).toUpperCase()}`
     };
-    setAdminUsers(prev => [...prev, newAdmin]);
+    setAdminUsers(prev => [newAdmin, ...prev]);
+    mockAdminUsers.unshift(newAdmin); // Add to global for demo persistence
+    
+    toast({ title: "Admin User Added", description: `Admin ${newAdmin.name} has been added.`});
+    setIsAddAdminDialogOpen(false);
+    // Reset form fields
+    setAdminName("");
+    setAdminEmail("");
+    setAdminRole("Support Staff");
+    setAdminStatus("Active");
   };
   
   const adminRoleTypes: AdminRoleType[] = ["Super Admin", "Content Manager", "User Manager", "Support Staff"];
+
+  const handleAdminStatusToggle = (adminId: string, currentStatus: AdminUser["status"]) => {
+    const newStatus = currentStatus === "Active" ? "Suspended" : "Active";
+    setAdminUsers(prev => prev.map(admin => admin.id === adminId ? {...admin, status: newStatus, lastLogin: new Date().toLocaleString()} : admin));
+    const globalIndex = mockAdminUsers.findIndex(admin => admin.id === adminId);
+    if (globalIndex > -1) mockAdminUsers[globalIndex] = {...mockAdminUsers[globalIndex], status: newStatus, lastLogin: new Date().toLocaleString()};
+
+    toast({ title: `Admin ${newStatus}`, description: `Admin user has been ${newStatus.toLowerCase()}.` });
+  };
+
+  const handleDeleteAdmin = (adminId: string) => {
+    const adminToDelete = adminUsers.find(admin => admin.id === adminId);
+    setAdminUsers(prev => prev.filter(admin => admin.id !== adminId));
+    const globalIndex = mockAdminUsers.findIndex(admin => admin.id === adminId);
+    if (globalIndex > -1) mockAdminUsers.splice(globalIndex, 1);
+
+    toast({ title: "Admin User Removed", description: `Admin ${adminToDelete?.name} has been removed.`, variant: "destructive"});
+  };
 
 
   return (
@@ -111,9 +166,9 @@ export default function AdminRolePage() {
               <CardTitle>Admin User Management</CardTitle>
               <CardDescription>Manage admin users and their roles within the platform.</CardDescription>
             </div>
-            <Dialog>
+            <Dialog open={isAddAdminDialogOpen} onOpenChange={setIsAddAdminDialogOpen}>
               <DialogTrigger asChild>
-                <Button>
+                <Button onClick={() => setIsAddAdminDialogOpen(true)}>
                   <PlusCircle className="mr-2 h-4 w-4" /> Add New Admin
                 </Button>
               </DialogTrigger>
@@ -124,29 +179,19 @@ export default function AdminRolePage() {
                     Enter the details for the new admin user.
                   </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget);
-                  handleAddAdmin({
-                    name: formData.get('name') as string,
-                    email: formData.get('email') as string,
-                    role: formData.get('role') as AdminRoleType,
-                    status: formData.get('status') === 'on' ? 'Active' : 'Suspended',
-                  });
-                  // TODO: Close dialog, clear form
-                }}>
+                <form onSubmit={handleAddAdminSubmit}>
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="name" className="text-right">Name</Label>
-                      <Input id="name" name="name" className="col-span-3" required />
+                      <Input id="name" name="name" value={adminName} onChange={(e) => setAdminName(e.target.value)} className="col-span-3" required />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="email" className="text-right">Email</Label>
-                      <Input id="email" name="email" type="email" className="col-span-3" required />
+                      <Input id="email" name="email" type="email" value={adminEmail} onChange={(e) => setAdminEmail(e.target.value)} className="col-span-3" required />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="role" className="text-right">Role</Label>
-                      <Select name="role" required>
+                      <Select name="role" value={adminRole} onValueChange={(value: AdminRoleType) => setAdminRole(value)} required>
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
@@ -159,7 +204,7 @@ export default function AdminRolePage() {
                     </div>
                      <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="status" className="text-right">Status</Label>
-                       <Select name="status" defaultValue="Active">
+                       <Select name="status" value={adminStatus} onValueChange={(value: AdminUser["status"]) => setAdminStatus(value)} >
                           <SelectTrigger className="col-span-3">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
@@ -171,6 +216,7 @@ export default function AdminRolePage() {
                     </div>
                   </div>
                   <DialogFooter>
+                    <DialogClose asChild><Button type="button" variant="outline">Cancel</Button></DialogClose>
                     <Button type="submit">Save Admin</Button>
                   </DialogFooter>
                 </form>
@@ -227,14 +273,34 @@ export default function AdminRolePage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem><Edit className="mr-2 h-4 w-4" /> Edit Role</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => toast({title: "Edit Role Clicked", description: `Editing ${admin.name}. (Not Implemented)`})}><Edit className="mr-2 h-4 w-4" /> Edit Role</DropdownMenuItem>
                            {admin.status === "Active" ? (
-                            <DropdownMenuItem className="text-orange-600 focus:text-orange-700"><ShieldOff className="mr-2 h-4 w-4" /> Suspend</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAdminStatusToggle(admin.id, admin.status)} className="text-orange-600 focus:text-orange-700"><ShieldOff className="mr-2 h-4 w-4" /> Suspend</DropdownMenuItem>
                            ) : (
-                            <DropdownMenuItem className="text-green-600 focus:text-green-700"><ShieldCheck className="mr-2 h-4 w-4" /> Activate</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleAdminStatusToggle(admin.id, admin.status)} className="text-green-600 focus:text-green-700"><ShieldCheck className="mr-2 h-4 w-4" /> Activate</DropdownMenuItem>
                            )}
                           <DropdownMenuSeparator/>
-                          <DropdownMenuItem className="text-destructive focus:text-destructive/90"><Trash2 className="mr-2 h-4 w-4" /> Remove Admin</DropdownMenuItem>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive/90">
+                                <Trash2 className="mr-2 h-4 w-4" /> Remove Admin
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will permanently remove the admin user "{admin.name}".
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteAdmin(admin.id)} className={buttonVariants({ variant: "destructive" })}>
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

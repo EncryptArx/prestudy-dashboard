@@ -4,24 +4,24 @@ import { Ticket, CheckCircle2, Users, XCircle, BookOpen, FileText as ExamIconLuc
 
 export type TopStatCardData = {
   title: string;
-  amount: string; 
-  percentageChange: number; 
+  amount: string;
+  percentageChange: number;
   isPositiveChange: boolean;
-  previousPeriodValue: string; 
-  trendLabel?: string; 
-  additionalPurchaseInfo?: string; 
-  additionalCompleteInfo?: string; 
+  previousPeriodValue: string;
+  trendLabel?: string;
+  additionalPurchaseInfo?: string;
+  additionalCompleteInfo?: string;
   completePercentageChange?: number;
   isCompletePositiveChange?: boolean;
 };
 
 export type ReportStat = {
   label: string;
-  value: string; 
+  value: string;
 };
 
 export type WeeklyChartDataPoint = {
-  day: string; 
+  day: string;
   value: number;
   highlighted?: boolean;
   highlightLabel?: string;
@@ -46,7 +46,7 @@ export type Transaction = {
   customerId: string;
   orderDate: string;
   status: "Paid" | "Pending" | "Failed";
-  amount: string; 
+  amount: string;
   productName: string;
   paymentMethod: PaymentMethod;
   transactionType: "Purchase" | "Refund" | "Subscription";
@@ -72,14 +72,14 @@ export const mockTopStatCards: TopStatCardData[] = [
   },
   {
     title: "Purchase & Complete Quizzes",
-    amount: "1.7K", 
+    amount: "1.7K",
     additionalPurchaseInfo: "user 204",
-    percentageChange: 0, 
-    isPositiveChange: true, 
+    percentageChange: 0,
+    isPositiveChange: true,
     additionalCompleteInfo: "94",
-    completePercentageChange: -14.4, 
+    completePercentageChange: -14.4,
     isCompletePositiveChange: false,
-    previousPeriodValue: "Last 7 days", 
+    previousPeriodValue: "Last 7 days",
   },
 ];
 
@@ -94,20 +94,20 @@ export const mockWeeklyReportData: WeeklyChartDataPoint[] = [
   { day: "Sun", value: 15000 },
   { day: "Mon", value: 18000 },
   { day: "Tue", value: 25000 },
-  { day: "Wed", value: 28000, highlighted: true, highlightLabel: "Thursday 25,409" }, 
+  { day: "Wed", value: 28000, highlighted: true, highlightLabel: "Thursday 25,409" },
   { day: "Thu", value: 22000 },
   { day: "Fri", value: 30000 },
   { day: "Sat", value: 33000 },
 ];
 
 
-export const mockUserActivityValue = 221; 
+export const mockUserActivityValue = 221;
 export const mockUserActivityChartData: UserActivityDataPoint[] = Array.from({ length: 20 }, () => ({
   value: Math.floor(Math.random() * 100),
 }));
 
 
-export const mockLeaderboardData: LeaderboardUser[] = [
+export let mockLeaderboardData: LeaderboardUser[] = [
   { rank: 1, userName: "UserAlpha", points: 1432, avatarUrl: "https://placehold.co/32x32.png?text=UA", quizCompletions: 50, avgScore: 92, memberSince: "Jan 2023" },
   { rank: 2, userName: "BetaUser", points: 1342, avatarUrl: "https://placehold.co/32x32.png?text=BU", quizCompletions: 45, avgScore: 90, memberSince: "Mar 2023" },
   { rank: 3, userName: "GammaPlayer", points: 1135, avatarUrl: "https://placehold.co/32x32.png?text=GP", quizCompletions: 40, avgScore: 88, memberSince: "Feb 2023" },
@@ -120,7 +120,7 @@ export const mockLeaderboardData: LeaderboardUser[] = [
   { rank: 10, userName: "KappaAce", points: 750, avatarUrl: "https://placehold.co/32x32.png?text=KA", quizCompletions: 18, avgScore: 70, memberSince: "Oct 2023" },
 ];
 
-export const mockTransactionsData: Transaction[] = [
+export let mockTransactionsData: Transaction[] = [
   { id: "1", customerId: "#6545", orderDate: "01 Oct 2024 | 11:29 am", status: "Paid", amount: "₹199", productName: "General Knowledge Quiz Pack", paymentMethod: "UPI", transactionType: "Purchase" },
   { id: "2", customerId: "#5412", orderDate: "01 Oct 2024 | 10:15 am", status: "Pending", amount: "₹99", productName: "History Quiz", paymentMethod: "Credit Card", transactionType: "Purchase"},
   { id: "3", customerId: "#6622", orderDate: "30 Sep 2024 | 09:00 pm", status: "Paid", amount: "₹199", productName: "Science Challenge", paymentMethod: "Debit Card", transactionType: "Purchase" },
@@ -147,7 +147,7 @@ export type SalesData = {
 export type RevenueData = {
   date: string;
   revenue: number;
-  profit?: number; 
+  profit?: number;
 };
 
 export type CategoryData = {
@@ -170,8 +170,8 @@ export const mockUserStats: UserStats = { totalUsers: 0, activeUsers: 0, newSign
 
 export const initialFilters = {
   dateRange: {
-    from: new Date(new Date().getFullYear(), 0, 1), 
-    to: new Date(), 
+    from: new Date(new Date().getFullYear(), 0, 1),
+    to: new Date(),
   },
   category: "all",
 };
@@ -182,12 +182,12 @@ export type OrderStatus = "Complete" | "Pending" | "Canceled";
 export type PaymentMethod = "UPI" | "Debit Card" | "Credit Card" | "Net Banking";
 
 export type Order = {
-  id: string; 
-  orderId: string; 
-  userId: string; 
+  id: string;
+  orderId: string;
+  userId: string;
   productName: string;
-  date: string; 
-  price: string; 
+  date: string;
+  price: string;
   paymentMethod: PaymentMethod;
   status: OrderStatus;
 };
@@ -211,16 +211,16 @@ export const mockOrderStats: OrderStat[] = [
   {
     title: "Completed Orders",
     value: "960",
-    percentageChange: "85%", 
+    percentageChange: "85%",
     periodLabel: "Last 7 days",
-    isPositive: true, 
+    isPositive: true,
   },
 ];
 
-export const mockOrders: Order[] = [
+export let mockOrders: Order[] = [
   { id: "ord1", orderId: "#ORD2312", userId: "#1234567890", productName: "General Knowledge Quiz #521", date: "01-01-2025", price: "₹99.99", paymentMethod: "UPI", status: "Complete" },
   { id: "ord2", orderId: "#ORD2313", userId: "#1232674566", productName: "Mathematic Quiz #65", date: "01-01-2025", price: "₹199.99", paymentMethod: "UPI", status: "Complete" },
-  { id: "ord3", orderId: "#ORD2314", userId: "#9879123120", productName: "General Science Quiz #452", date: "01-01-2025", price: "₹99.99", paymentMethod: "UPI", status: "Complete" }, 
+  { id: "ord3", orderId: "#ORD2314", userId: "#9879123120", productName: "General Science Quiz #452", date: "01-01-2025", price: "₹99.99", paymentMethod: "UPI", status: "Complete" },
   { id: "ord4", orderId: "#ORD2315", userId: "#8798324768", productName: "ADRE Quiz #452", date: "01-01-2025", price: "₹99.99", paymentMethod: "UPI", status: "Canceled" },
   { id: "ord5", orderId: "#ORD2316", userId: "#8473958459", productName: "General Knowledge Quiz #521", date: "01-01-2025", price: "₹199.99", paymentMethod: "UPI", status: "Complete" },
   { id: "ord6", orderId: "#ORD2317", userId: "#1278675389", productName: "Mathematic Quiz #452", date: "01-01-2025", price: "₹199.99", paymentMethod: "UPI", status: "Complete" },
@@ -314,7 +314,7 @@ const generateRandomCustomerData = (id: number): Customer => {
   const email = `${name.toLowerCase().replace(" ", ".")}@${emailDomain[Math.floor(Math.random() * emailDomain.length)]}`;
   const totalPurchaseCount = Math.floor(Math.random() * 50) + 1;
   const completedCount = Math.floor(Math.random() * totalPurchaseCount);
-  
+
   return {
     id: `cust${id}`,
     userId: `#${Math.floor(Math.random() * 9000000000) + 1000000000}`,
@@ -335,7 +335,7 @@ const generateRandomCustomerData = (id: number): Customer => {
   };
 };
 
-export const mockCustomers: Customer[] = Array.from({ length: 25 }, (_, i) => generateRandomCustomerData(i + 1));
+export let mockCustomers: Customer[] = Array.from({ length: 25 }, (_, i) => generateRandomCustomerData(i + 1));
 
 
 // Types for Categories Page
@@ -357,23 +357,23 @@ export type ProductListItem = {
 };
 
 export const mockDiscoverCategories: DiscoverCategory[] = [
-  { 
-    id: "topic", 
-    title: "Topic Categories", 
-    imageUrl: "https://placehold.co/80x60.png", 
+  {
+    id: "topic",
+    title: "Topic Categories",
+    imageUrl: "https://placehold.co/80x60.png",
     imageHint: "education concepts",
-    itemCount: 120, 
-    bgColorClass: "bg-green-100 dark:bg-green-800/30", 
-    textColorClass: "text-green-700 dark:text-green-300" 
+    itemCount: 120,
+    bgColorClass: "bg-green-100 dark:bg-green-800/30",
+    textColorClass: "text-green-700 dark:text-green-300"
   },
-  { 
-    id: "exam", 
-    title: "Exam Categories", 
-    imageUrl: "https://placehold.co/80x60.png", 
+  {
+    id: "exam",
+    title: "Exam Categories",
+    imageUrl: "https://placehold.co/80x60.png",
     imageHint: "exam preparation",
-    itemCount: 45, 
-    bgColorClass: "bg-purple-100 dark:bg-purple-800/30", 
-    textColorClass: "text-purple-700 dark:text-purple-300" 
+    itemCount: 45,
+    bgColorClass: "bg-purple-100 dark:bg-purple-800/30",
+    textColorClass: "text-purple-700 dark:text-purple-300"
   },
   { id: "genknow", title: "General Knowledge", imageUrl: "https://placehold.co/60x40.png", imageHint: "knowledge quiz" },
   { id: "assgk", title: "Assam GK", imageUrl: "https://placehold.co/60x40.png", imageHint: "assam map" },
@@ -385,7 +385,7 @@ export const mockDiscoverCategories: DiscoverCategory[] = [
   { id: "tet", title: "TET", imageUrl: "https://placehold.co/60x40.png", imageHint: "teacher exam" },
 ];
 
-export const mockProductListItems: ProductListItem[] = [
+export let mockProductListItems: ProductListItem[] = [
   { id: "prod1", name: "ADRE Quiz Set", createdDate: "01-01-2025", category: "Assam GK" },
   { id: "prod2", name: "General Knowledge Challenge Pack", createdDate: "15-12-2024", category: "General Knowledge" },
   { id: "prod3", name: "Quantitative Aptitude Masterclass", createdDate: "10-11-2024", category: "Quantitative Aptitude" },
@@ -399,9 +399,9 @@ export const mockProductListItems: ProductListItem[] = [
   { id: "prod11", name: "Logical Reasoning Puzzles", createdDate: "22-11-2024", category: "Reasoning" },
 ];
 
-export const totalQuizCount = mockProductListItems.length; 
-export const featuredProductCount = 20; 
-export const onSaleProductCount = 15; 
+export const totalQuizCount = mockProductListItems.length;
+export const featuredProductCount = 20;
+export const onSaleProductCount = 15;
 
 
 // Types for Coupon Code Page
@@ -441,7 +441,7 @@ export const mockCouponStats: CouponStatSummary[] = [
 ];
 
 
-export const mockCoupons: Coupon[] = [
+export let mockCoupons: Coupon[] = [
   {
     id: "cpn1",
     code: "SUMMER25",
@@ -527,7 +527,7 @@ export type QuizListItem = {
   lastUpdatedDate: string;
 };
 
-export const mockQuizListItems: QuizListItem[] = [
+export let mockQuizListItems: QuizListItem[] = [
   {
     id: "quiz1",
     title: "Basics of Indian History",
@@ -614,7 +614,7 @@ export type AddQuizFormValues = {
     description: string;
     // For simplicity, we'll use a JSON string for questions in the mock setup
     // In a real app, this would be a more structured array of question objects
-    questionsJson: string; 
+    questionsJson: string;
 };
 
 // Course Categories
@@ -628,7 +628,7 @@ export type CourseCategory = {
   lastUpdated: string;
 };
 
-export const mockCourseCategories: CourseCategory[] = [
+export let mockCourseCategories: CourseCategory[] = [
   { id: "ccat1", name: "Mathematics", description: "Covers algebra, geometry, calculus, and more.", quizCount: 25, imageUrl: "https://placehold.co/300x200.png", imageHint: "math equations", lastUpdated: "2024-07-15" },
   { id: "ccat2", name: "General Science", description: "Physics, Chemistry, Biology fundamentals.", quizCount: 18, imageUrl: "https://placehold.co/300x200.png", imageHint: "science experiment", lastUpdated: "2024-07-10" },
   { id: "ccat3", name: "History of Assam", description: "Detailed quizzes on Assam's rich history.", quizCount: 15, imageUrl: "https://placehold.co/300x200.png", imageHint: "historical monument", lastUpdated: "2024-06-20" },
@@ -650,7 +650,7 @@ export type ProductReview = {
   status: ReviewStatus;
 };
 
-export const mockProductReviews: ProductReview[] = [
+export let mockProductReviews: ProductReview[] = [
   { id: "rev1", productId: "quiz1", productName: "Basics of Indian History", userName: "Reviewer One", userAvatarUrl: "https://placehold.co/32x32.png?text=R1", rating: 5, comment: "Excellent quiz, very informative!", date: "2024-07-10", status: "Approved" },
   { id: "rev2", productId: "quiz2", productName: "Advanced Algebra Challenge", userName: "Math Wiz", userAvatarUrl: "https://placehold.co/32x32.png?text=MW", rating: 4, comment: "Challenging but good. Some questions could have better explanations.", date: "2024-07-05", status: "Pending" },
   { id: "rev3", productId: "quiz1", productName: "Basics of Indian History", userName: "History Buff", userAvatarUrl: "https://placehold.co/32x32.png?text=HB", rating: 3, comment: "A bit too easy for me.", date: "2024-06-28", status: "Approved" },
@@ -670,7 +670,7 @@ export type AdminUser = {
   status: "Active" | "Suspended";
 };
 
-export const mockAdminUsers: AdminUser[] = [
+export let mockAdminUsers: AdminUser[] = [
   { id: "admin1", name: "Alice Wonderland", email: "alice@prestudy.com", avatarUrl: "https://placehold.co/40x40.png?text=AW", role: "Super Admin", lastLogin: "2024-07-20 10:00 AM", status: "Active" },
   { id: "admin2", name: "Bob The Builder", email: "bob@prestudy.com", avatarUrl: "https://placehold.co/40x40.png?text=BB", role: "Content Manager", lastLogin: "2024-07-19 03:30 PM", status: "Active" },
   { id: "admin3", name: "Charlie Brown", email: "charlie@prestudy.com", avatarUrl: "https://placehold.co/40x40.png?text=CB", role: "User Manager", lastLogin: "2024-07-18 11:15 AM", status: "Active" },
@@ -686,7 +686,7 @@ export type Permission = {
   lastModified: string;
 };
 
-export const mockPermissions: Permission[] = [
+export let mockPermissions: Permission[] = [
   { id: "perm1", featureName: "User Management", description: "Add, edit, delete, suspend users.", rolesAllowed: ["Super Admin", "User Manager"], lastModified: "2024-07-01" },
   { id: "perm2", featureName: "Quiz Management", description: "Create, edit, publish, archive quizzes.", rolesAllowed: ["Super Admin", "Content Manager"], lastModified: "2024-07-05" },
   { id: "perm3", featureName: "Coupon Management", description: "Create, edit, delete coupons.", rolesAllowed: ["Super Admin"], lastModified: "2024-06-15" },
@@ -694,4 +694,3 @@ export const mockPermissions: Permission[] = [
   { id: "perm5", featureName: "Review Management", description: "Approve or reject product reviews.", rolesAllowed: ["Super Admin", "Content Manager"], lastModified: "2024-07-10" },
   { id: "perm6", featureName: "Role Management", description: "Define and assign admin roles.", rolesAllowed: ["Super Admin"], lastModified: "2024-07-01" },
 ];
-    

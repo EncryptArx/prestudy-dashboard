@@ -14,7 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { PlusCircle, Save, RotateCcw } from "lucide-react";
 import { usePageTitle } from '@/contexts/PageTitleContext';
 import { useToast } from "@/hooks/use-toast";
-import { quizCategories, quizDifficulties, type AddQuizFormValues, type QuizDifficulty } from "@/data/mock-data";
+import { quizCategories, quizDifficulties, type AddQuizFormValues, type QuizDifficulty, mockQuizListItems, type QuizListItem } from "@/data/mock-data";
 
 const addQuizFormSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters").max(100),
@@ -61,14 +61,44 @@ export default function AddQuizPage() {
   });
 
   function onSubmit(data: AddQuizFormValues) {
-    console.log("Quiz data submitted:", data);
-    // Here you would typically send data to your backend
-    // For now, we'll just show a success toast
-    toast({
-      title: "Quiz Created Successfully!",
-      description: `Quiz "${data.title}" has been added.`,
-    });
-    // Optionally reset form: form.reset();
+    try {
+      const questions = JSON.parse(data.questionsJson);
+      if (!Array.isArray(questions) || questions.length === 0) {
+        toast({
+          title: "Invalid Questions Format",
+          description: "Questions JSON must be a non-empty array.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const newQuiz: QuizListItem = {
+        id: `quiz${mockQuizListItems.length + 1 + Date.now()}`, // More unique ID
+        title: data.title,
+        category: data.category,
+        questionsCount: questions.length,
+        difficulty: data.difficulty,
+        status: "Draft", // Default status for new quizzes
+        createdDate: new Date().toISOString().split('T')[0],
+        lastUpdatedDate: new Date().toISOString().split('T')[0],
+      };
+
+      // Add to the global mock data array (for demo purposes)
+      mockQuizListItems.push(newQuiz);
+
+      toast({
+        title: "Quiz Created Successfully!",
+        description: `Quiz "${data.title}" has been added. It will appear in the Quiz List after navigating there.`,
+      });
+      form.reset();
+    } catch (e) {
+      console.error("Error submitting quiz:", e);
+      toast({
+        title: "Error Parsing Questions JSON",
+        description: "Please ensure the questions are in valid JSON format.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -193,5 +223,3 @@ export default function AddQuizPage() {
     </div>
   );
 }
-
-    
