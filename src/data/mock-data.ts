@@ -1,6 +1,6 @@
 
 import type { DateRange } from "react-day-picker";
-import { Ticket, CheckCircle2, Users, XCircle, BookOpen, FileText as ExamIconLucide, Brain, BarChart3, HelpCircle, ShieldCheck } from "lucide-react"; // Added more icons
+import { Ticket, CheckCircle2, Users, XCircle, BookOpen, FileText as ExamIconLucide, Brain, BarChart3, HelpCircle, ShieldCheck, Star, Settings, User, MessageSquare, ShieldAlert, Package, ThumbsUp, ThumbsDown, Edit3 } from "lucide-react"; // Added more icons
 
 export type TopStatCardData = {
   title: string;
@@ -38,6 +38,7 @@ export type LeaderboardUser = {
   avatarUrl?: string;
   quizCompletions: number;
   avgScore: number;
+  memberSince: string;
 };
 
 export type Transaction = {
@@ -48,6 +49,7 @@ export type Transaction = {
   amount: string; 
   productName: string;
   paymentMethod: PaymentMethod;
+  transactionType: "Purchase" | "Refund" | "Subscription";
 };
 
 
@@ -106,31 +108,32 @@ export const mockUserActivityChartData: UserActivityDataPoint[] = Array.from({ l
 
 
 export const mockLeaderboardData: LeaderboardUser[] = [
-  { rank: 1, userName: "UserAlpha", points: 1432, avatarUrl: "https://placehold.co/32x32.png?text=UA", quizCompletions: 50, avgScore: 92 },
-  { rank: 2, userName: "BetaUser", points: 1342, avatarUrl: "https://placehold.co/32x32.png?text=BU", quizCompletions: 45, avgScore: 90 },
-  { rank: 3, userName: "GammaPlayer", points: 1135, avatarUrl: "https://placehold.co/32x32.png?text=GP", quizCompletions: 40, avgScore: 88 },
-  { rank: 4, userName: "DeltaChamp", points: 1003, avatarUrl: "https://placehold.co/32x32.png?text=DC", quizCompletions: 35, avgScore: 85 },
-  { rank: 5, userName: "EpsilonStar", points: 937, avatarUrl: "https://placehold.co/32x32.png?text=ES", quizCompletions: 30, avgScore: 82 },
-  { rank: 6, userName: "ZetaMaster", points: 921, avatarUrl: "https://placehold.co/32x32.png?text=ZM", quizCompletions: 28, avgScore: 80 },
-  { rank: 7, userName: "EtaGuru", points: 870, avatarUrl: "https://placehold.co/32x32.png?text=EG", quizCompletions: 25, avgScore: 78 },
-  { rank: 8, userName: "ThetaPro", points: 821, avatarUrl: "https://placehold.co/32x32.png?text=TP", quizCompletions: 22, avgScore: 75 },
-  { rank: 9, userName: "IotaExpert", points: 799, avatarUrl: "https://placehold.co/32x32.png?text=IE", quizCompletions: 20, avgScore: 73 },
-  { rank: 10, userName: "KappaAce", points: 750, avatarUrl: "https://placehold.co/32x32.png?text=KA", quizCompletions: 18, avgScore: 70 },
+  { rank: 1, userName: "UserAlpha", points: 1432, avatarUrl: "https://placehold.co/32x32.png?text=UA", quizCompletions: 50, avgScore: 92, memberSince: "Jan 2023" },
+  { rank: 2, userName: "BetaUser", points: 1342, avatarUrl: "https://placehold.co/32x32.png?text=BU", quizCompletions: 45, avgScore: 90, memberSince: "Mar 2023" },
+  { rank: 3, userName: "GammaPlayer", points: 1135, avatarUrl: "https://placehold.co/32x32.png?text=GP", quizCompletions: 40, avgScore: 88, memberSince: "Feb 2023" },
+  { rank: 4, userName: "DeltaChamp", points: 1003, avatarUrl: "https://placehold.co/32x32.png?text=DC", quizCompletions: 35, avgScore: 85, memberSince: "Apr 2023" },
+  { rank: 5, userName: "EpsilonStar", points: 937, avatarUrl: "https://placehold.co/32x32.png?text=ES", quizCompletions: 30, avgScore: 82, memberSince: "May 2023" },
+  { rank: 6, userName: "ZetaMaster", points: 921, avatarUrl: "https://placehold.co/32x32.png?text=ZM", quizCompletions: 28, avgScore: 80, memberSince: "Jun 2023" },
+  { rank: 7, userName: "EtaGuru", points: 870, avatarUrl: "https://placehold.co/32x32.png?text=EG", quizCompletions: 25, avgScore: 78, memberSince: "Jul 2023" },
+  { rank: 8, userName: "ThetaPro", points: 821, avatarUrl: "https://placehold.co/32x32.png?text=TP", quizCompletions: 22, avgScore: 75, memberSince: "Aug 2023" },
+  { rank: 9, userName: "IotaExpert", points: 799, avatarUrl: "https://placehold.co/32x32.png?text=IE", quizCompletions: 20, avgScore: 73, memberSince: "Sep 2023" },
+  { rank: 10, userName: "KappaAce", points: 750, avatarUrl: "https://placehold.co/32x32.png?text=KA", quizCompletions: 18, avgScore: 70, memberSince: "Oct 2023" },
 ];
 
 export const mockTransactionsData: Transaction[] = [
-  { id: "1", customerId: "#6545", orderDate: "01 Oct 2024 | 11:29 am", status: "Paid", amount: "₹199", productName: "General Knowledge Quiz Pack", paymentMethod: "UPI" },
-  { id: "2", customerId: "#5412", orderDate: "01 Oct 2024 | 10:15 am", status: "Pending", amount: "₹99", productName: "History Quiz", paymentMethod: "Credit Card"},
-  { id: "3", customerId: "#6622", orderDate: "30 Sep 2024 | 09:00 pm", status: "Paid", amount: "₹199", productName: "Science Challenge", paymentMethod: "Debit Card" },
-  { id: "4", customerId: "#6462", orderDate: "30 Sep 2024 | 05:30 pm", status: "Paid", amount: "₹199", productName: "Mathematics Advanced", paymentMethod: "UPI" },
-  { id: "5", customerId: "#7890", orderDate: "29 Sep 2024 | 02:00 pm", status: "Failed", amount: "₹49", productName: "Quick GK Test", paymentMethod: "Net Banking"},
-  { id: "6", customerId: "#1234", orderDate: "29 Sep 2024 | 11:00 am", status: "Paid", amount: "₹299", productName: "Full Aptitude Course", paymentMethod: "UPI" },
-  { id: "7", customerId: "#5678", orderDate: "28 Sep 2024 | 08:45 pm", status: "Paid", amount: "₹149", productName: "Reasoning Masterclass", paymentMethod: "Credit Card" },
-  { id: "8", customerId: "#9012", orderDate: "28 Sep 2024 | 03:15 pm", status: "Pending", amount: "₹199", productName: "Assam GK Special", paymentMethod: "Debit Card" },
-  { id: "9", customerId: "#3456", orderDate: "27 Sep 2024 | 06:00 pm", status: "Paid", amount: "₹99", productName: "SSC Exam Prep", paymentMethod: "UPI" },
-  { id: "10", customerId: "#7891", orderDate: "27 Sep 2024 | 01:00 pm", status: "Paid", amount: "₹79", productName: "TET Mock Test", paymentMethod: "Net Banking" },
-  { id: "11", customerId: "#1122", orderDate: "26 Sep 2024 | 10:30 am", status: "Failed", amount: "₹199", productName: "ADRE Full Pack", paymentMethod: "UPI" },
-  { id: "12", customerId: "#3344", orderDate: "26 Sep 2024 | 09:00 am", status: "Paid", amount: "₹59", productName: "Daily Current Affairs", paymentMethod: "Credit Card" },
+  { id: "1", customerId: "#6545", orderDate: "01 Oct 2024 | 11:29 am", status: "Paid", amount: "₹199", productName: "General Knowledge Quiz Pack", paymentMethod: "UPI", transactionType: "Purchase" },
+  { id: "2", customerId: "#5412", orderDate: "01 Oct 2024 | 10:15 am", status: "Pending", amount: "₹99", productName: "History Quiz", paymentMethod: "Credit Card", transactionType: "Purchase"},
+  { id: "3", customerId: "#6622", orderDate: "30 Sep 2024 | 09:00 pm", status: "Paid", amount: "₹199", productName: "Science Challenge", paymentMethod: "Debit Card", transactionType: "Purchase" },
+  { id: "4", customerId: "#6462", orderDate: "30 Sep 2024 | 05:30 pm", status: "Paid", amount: "₹199", productName: "Mathematics Advanced", paymentMethod: "UPI", transactionType: "Purchase" },
+  { id: "5", customerId: "#7890", orderDate: "29 Sep 2024 | 02:00 pm", status: "Failed", amount: "₹49", productName: "Quick GK Test", paymentMethod: "Net Banking", transactionType: "Purchase"},
+  { id: "6", customerId: "#1234", orderDate: "29 Sep 2024 | 11:00 am", status: "Paid", amount: "₹299", productName: "Full Aptitude Course", paymentMethod: "UPI", transactionType: "Subscription" },
+  { id: "7", customerId: "#5678", orderDate: "28 Sep 2024 | 08:45 pm", status: "Paid", amount: "₹149", productName: "Reasoning Masterclass", paymentMethod: "Credit Card", transactionType: "Purchase" },
+  { id: "8", customerId: "#9012", orderDate: "28 Sep 2024 | 03:15 pm", status: "Pending", amount: "₹199", productName: "Assam GK Special", paymentMethod: "Debit Card", transactionType: "Purchase" },
+  { id: "9", customerId: "#3456", orderDate: "27 Sep 2024 | 06:00 pm", status: "Paid", amount: "₹99", productName: "SSC Exam Prep", paymentMethod: "UPI", transactionType: "Purchase" },
+  { id: "10", customerId: "#7891", orderDate: "27 Sep 2024 | 01:00 pm", status: "Paid", amount: "₹79", productName: "TET Mock Test", paymentMethod: "Net Banking", transactionType: "Purchase" },
+  { id: "11", customerId: "#1122", orderDate: "26 Sep 2024 | 10:30 am", status: "Failed", amount: "₹199", productName: "ADRE Full Pack", paymentMethod: "UPI", transactionType: "Purchase" },
+  { id: "12", customerId: "#3344", orderDate: "26 Sep 2024 | 09:00 am", status: "Paid", amount: "₹59", productName: "Daily Current Affairs", paymentMethod: "Credit Card", transactionType: "Subscription" },
+  { id: "13", customerId: "#6545", orderDate: "15 Oct 2024 | 09:00 am", status: "Paid", amount: "₹50", productName: "Refund for History Quiz", paymentMethod: "UPI", transactionType: "Refund" },
 ];
 
 
@@ -614,4 +617,81 @@ export type AddQuizFormValues = {
     questionsJson: string; 
 };
 
+// Course Categories
+export type CourseCategory = {
+  id: string;
+  name: string;
+  description: string;
+  quizCount: number;
+  imageUrl: string;
+  imageHint: string;
+  lastUpdated: string;
+};
+
+export const mockCourseCategories: CourseCategory[] = [
+  { id: "ccat1", name: "Mathematics", description: "Covers algebra, geometry, calculus, and more.", quizCount: 25, imageUrl: "https://placehold.co/300x200.png", imageHint: "math equations", lastUpdated: "2024-07-15" },
+  { id: "ccat2", name: "General Science", description: "Physics, Chemistry, Biology fundamentals.", quizCount: 18, imageUrl: "https://placehold.co/300x200.png", imageHint: "science experiment", lastUpdated: "2024-07-10" },
+  { id: "ccat3", name: "History of Assam", description: "Detailed quizzes on Assam's rich history.", quizCount: 15, imageUrl: "https://placehold.co/300x200.png", imageHint: "historical monument", lastUpdated: "2024-06-20" },
+  { id: "ccat4", name: "Logical Reasoning", description: "Puzzles and problems to sharpen analytical skills.", quizCount: 30, imageUrl: "https://placehold.co/300x200.png", imageHint: "brain gears", lastUpdated: "2024-07-01" },
+  { id: "ccat5", name: "Competitive Exams Prep", description: "Focused on ADRE, SSC, TET patterns.", quizCount: 40, imageUrl: "https://placehold.co/300x200.png", imageHint: "exam hall", lastUpdated: "2024-07-18" },
+];
+
+// Product Reviews
+export type ReviewStatus = "Pending" | "Approved" | "Rejected";
+export type ProductReview = {
+  id: string;
+  productId: string; // Links to a quiz/product
+  productName: string;
+  userName: string;
+  userAvatarUrl?: string;
+  rating: number; // 1 to 5
+  comment: string;
+  date: string;
+  status: ReviewStatus;
+};
+
+export const mockProductReviews: ProductReview[] = [
+  { id: "rev1", productId: "quiz1", productName: "Basics of Indian History", userName: "Reviewer One", userAvatarUrl: "https://placehold.co/32x32.png?text=R1", rating: 5, comment: "Excellent quiz, very informative!", date: "2024-07-10", status: "Approved" },
+  { id: "rev2", productId: "quiz2", productName: "Advanced Algebra Challenge", userName: "Math Wiz", userAvatarUrl: "https://placehold.co/32x32.png?text=MW", rating: 4, comment: "Challenging but good. Some questions could have better explanations.", date: "2024-07-05", status: "Pending" },
+  { id: "rev3", productId: "quiz1", productName: "Basics of Indian History", userName: "History Buff", userAvatarUrl: "https://placehold.co/32x32.png?text=HB", rating: 3, comment: "A bit too easy for me.", date: "2024-06-28", status: "Approved" },
+  { id: "rev4", productId: "quiz3", productName: "Assam Geography Overview", userName: "Local Expert", userAvatarUrl: "https://placehold.co/32x32.png?text=LE", rating: 5, comment: "Covers Assam geography very well.", date: "2024-07-12", status: "Approved" },
+  { id: "rev5", productId: "quiz5", productName: "ADRE Exam Mock Test", userName: "AspirantX", userAvatarUrl: "https://placehold.co/32x32.png?text=AX", rating: 2, comment: "Content seems outdated.", date: "2024-06-15", status: "Rejected" },
+];
+
+// Admin Role
+export type AdminRoleType = "Super Admin" | "Content Manager" | "User Manager" | "Support Staff";
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  role: AdminRoleType;
+  lastLogin: string;
+  status: "Active" | "Suspended";
+};
+
+export const mockAdminUsers: AdminUser[] = [
+  { id: "admin1", name: "Alice Wonderland", email: "alice@prestudy.com", avatarUrl: "https://placehold.co/40x40.png?text=AW", role: "Super Admin", lastLogin: "2024-07-20 10:00 AM", status: "Active" },
+  { id: "admin2", name: "Bob The Builder", email: "bob@prestudy.com", avatarUrl: "https://placehold.co/40x40.png?text=BB", role: "Content Manager", lastLogin: "2024-07-19 03:30 PM", status: "Active" },
+  { id: "admin3", name: "Charlie Brown", email: "charlie@prestudy.com", avatarUrl: "https://placehold.co/40x40.png?text=CB", role: "User Manager", lastLogin: "2024-07-18 11:15 AM", status: "Active" },
+  { id: "admin4", name: "Diana Prince", email: "diana@prestudy.com", avatarUrl: "https://placehold.co/40x40.png?text=DP", role: "Support Staff", lastLogin: "2024-07-20 09:00 AM", status: "Suspended" },
+];
+
+// Control Authority
+export type Permission = {
+  id: string;
+  featureName: string;
+  description: string;
+  rolesAllowed: AdminRoleType[]; // Array of roles that can access this feature
+  lastModified: string;
+};
+
+export const mockPermissions: Permission[] = [
+  { id: "perm1", featureName: "User Management", description: "Add, edit, delete, suspend users.", rolesAllowed: ["Super Admin", "User Manager"], lastModified: "2024-07-01" },
+  { id: "perm2", featureName: "Quiz Management", description: "Create, edit, publish, archive quizzes.", rolesAllowed: ["Super Admin", "Content Manager"], lastModified: "2024-07-05" },
+  { id: "perm3", featureName: "Coupon Management", description: "Create, edit, delete coupons.", rolesAllowed: ["Super Admin"], lastModified: "2024-06-15" },
+  { id: "perm4", featureName: "View Financial Reports", description: "Access sales and revenue data.", rolesAllowed: ["Super Admin"], lastModified: "2024-05-10" },
+  { id: "perm5", featureName: "Review Management", description: "Approve or reject product reviews.", rolesAllowed: ["Super Admin", "Content Manager"], lastModified: "2024-07-10" },
+  { id: "perm6", featureName: "Role Management", description: "Define and assign admin roles.", rolesAllowed: ["Super Admin"], lastModified: "2024-07-01" },
+];
     

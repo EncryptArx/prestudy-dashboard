@@ -31,6 +31,8 @@ import {
   LogOut,
   ExternalLink,
   Briefcase, 
+  MessageSquare, // Added for Product Reviews
+  ShieldAlert // Added for Control Authority
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -59,14 +61,14 @@ export default function AppSidebar() {
         { href: "/add-quiz", label: "Add Quiz", icon: PlusCircle, activePaths: ["/add-quiz"] },
         { href: "/quiz-list", label: "Quiz List", icon: ListChecks, activePaths: ["/quiz-list"] },
         { href: "/course-categories", label: "Course Categories", icon: Network, activePaths: ["/course-categories"] },
-        { href: "/product-reviews", label: "Product Reviews", icon: FileText, activePaths: ["/product-reviews"] },
+        { href: "/product-reviews", label: "Product Reviews", icon: MessageSquare, activePaths: ["/product-reviews"] },
       ],
     },
     {
       group: "Admin",
       items: [
         { href: "/admin-role", label: "Admin role", icon: UserCog, activePaths: ["/admin-role"] },
-        { href: "/control-authority", label: "Control Authority", icon: Settings2, activePaths: ["/control-authority"] },
+        { href: "/control-authority", label: "Control Authority", icon: ShieldAlert, activePaths: ["/control-authority"] },
       ],
     },
   ];
@@ -144,6 +146,5 @@ export default function AppSidebar() {
     </Sidebar>
   );
 }
-
 
     
