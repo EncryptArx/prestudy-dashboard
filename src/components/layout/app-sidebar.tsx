@@ -50,7 +50,6 @@ export default function AppSidebar() {
         { href: "/order-management", label: "Order Management", icon: ShoppingCart, activePaths: ["/order-management"] },
         { href: "/all-users", label: "All Users", icon: Users, activePaths: ["/all-users"] },
         { href: "/coupon-code", label: "Coupon Code", icon: Ticket, activePaths: ["/coupon-code"] },
-        { href: "/categories", label: "Categories", icon: LayoutGrid, activePaths: ["/categories"] },
         { href: "/transactions", label: "Transaction", icon: ListOrdered, activePaths: ["/transactions"] },
         { href: "/leaderboard", label: "Leaderboard", icon: Star, activePaths: ["/leaderboard"] }, 
       ],
@@ -58,6 +57,7 @@ export default function AppSidebar() {
     {
       group: "App Management",
       items: [
+        { href: "/categories", label: "Categories", icon: LayoutGrid, activePaths: ["/categories"] },
         { href: "/add-quiz", label: "Add Quiz", icon: PlusCircle, activePaths: ["/add-quiz"] },
         { href: "/quiz-list", label: "Quiz List", icon: ListChecks, activePaths: ["/quiz-list"] },
         { href: "/course-categories", label: "Course Categories", icon: Network, activePaths: ["/course-categories"] },
